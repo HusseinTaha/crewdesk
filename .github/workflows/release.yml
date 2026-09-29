@@ -28,7 +28,7 @@ jobs:
         id: npm
         run: |
           v=$(node -p "require('./package.json').version")
-          if npm view "crewdesk@$v" version >/dev/null 2>&1; then echo "published=true" >> "$GITHUB_OUTPUT"; else echo "published=false" >> "$GITHUB_OUTPUT"; fi
+          if npm view "crewdesk@$v" version --prefer-online >/dev/null 2>&1; then echo "published=true" >> "$GITHUB_OUTPUT"; else echo "published=false" >> "$GITHUB_OUTPUT"; fi
       - run: pnpm install --frozen-lockfile
       # prepublishOnly runs build + typecheck + unit tests before publishing.
       - run: pnpm exec playwright install --with-deps chromium
