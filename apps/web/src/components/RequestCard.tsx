@@ -143,7 +143,7 @@ export const RequestCard = forwardRef<RequestCardHandle, Props>(function Request
           <div className="text-sm text-muted">
             Wants to use <span className="font-mono text-fg">{perm.toolName}</span>:
           </div>
-          <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-all rounded-md border border-line bg-card-2 p-3 font-mono text-sm">
+          <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap rounded-md border border-line bg-card-2 p-3 font-mono text-sm">
             {perm.summary || JSON.stringify(perm.toolInput, null, 2)}
           </pre>
           {perm.cwd && (

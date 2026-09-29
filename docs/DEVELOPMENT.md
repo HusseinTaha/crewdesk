@@ -19,6 +19,7 @@ test/live       Opt-in tests against a real `claude -p`
 | `pnpm test:live` | Real Claude Code sessions. Uses tokens; hooks are passed via `--settings` |
 | `pnpm typecheck` | Type-checks every package |
 | `bash scripts/smoke.sh` | macOS/Linux: installer, daemon, pid detection, fail-open against a throwaway HOME. Needs `pnpm build` |
+| `node scripts/screenshots.mjs` | Regenerates the README screenshots in `docs/images/` from a throwaway hub with made-up sessions. Needs `pnpm build` |
 
 CI (`.github/workflows/ci.yml`) runs all of the above on Linux, macOS and Windows with Node 22.13 and 24, plus an `npm pack` + global-install check. Pushing a `v*` tag that matches `package.json` publishes to npm (`release.yml`, needs the `NPM_TOKEN` secret).
 

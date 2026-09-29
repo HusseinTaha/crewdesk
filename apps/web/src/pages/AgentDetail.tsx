@@ -25,7 +25,7 @@ export function AgentDetail({ id, live, revision, onBack }: { id: string; live: 
   const Row = ({ k, v }: { k: string; v: React.ReactNode }) => (
     <div>
       <dt className="text-xs uppercase tracking-wider text-muted">{k}</dt>
-      <dd className="mt-0.5 break-all font-mono text-sm">{v}</dd>
+      <dd className="mt-0.5 font-mono text-sm">{v}</dd>
     </div>
   );
 
