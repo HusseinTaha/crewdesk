@@ -80,7 +80,11 @@ async function confirm(question: string, dflt = true): Promise<boolean> {
 function openBrowser(url: string) {
   const cmd =
     process.platform === "win32" ? `start "" "${url}"` : process.platform === "darwin" ? `open "${url}"` : `xdg-open "${url}"`;
-  exec(cmd, () => {});
+  console.log(`Opening ${url}`);
+  // Headless Linux often has no xdg-open (or no display): fall back to printing the URL.
+  exec(cmd, (err) => {
+    if (err) console.log(`Could not open a browser. Visit ${url}`);
+  });
 }
 
 async function cmdStart(cfg: HubConfig, args: string[]) {
@@ -310,7 +314,6 @@ export async function main(argv = process.argv.slice(2)) {
     case "open":
       if (!(await health(cfg))) await cmdStart(cfg, []);
       openBrowser(baseUrl(cfg));
-      console.log(`Opening ${baseUrl(cfg)}`);
       return;
     case "logs":
       return cmdLogs(cfg, args);

@@ -18,5 +18,8 @@ test/live       Opt-in tests against a real `claude -p`
 | `pnpm test:e2e` | Playwright. Needs `pnpm build` first |
 | `pnpm test:live` | Real Claude Code sessions. Uses tokens; hooks are passed via `--settings` |
 | `pnpm typecheck` | Type-checks every package |
+| `bash scripts/smoke.sh` | macOS/Linux: installer, daemon, pid detection, fail-open against a throwaway HOME. Needs `pnpm build` |
+
+CI (`.github/workflows/ci.yml`) runs all of the above on Linux, macOS and Windows with Node 22.13 and 24, plus an `npm pack` + global-install check. Pushing a `v*` tag that matches `package.json` publishes to npm (`release.yml`, needs the `NPM_TOKEN` secret).
 
 To add a new delivery mechanism, implement `SessionTransport` (`apps/server/src/transport/transport.ts`) and register it in `RoutingService`.

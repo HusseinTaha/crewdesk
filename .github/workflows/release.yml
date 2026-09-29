@@ -1,0 +1,36 @@
+name: Release
+
+# Push a tag like v0.1.0 (matching package.json "version") to publish to npm.
+# Requires the repository secret NPM_TOKEN (an npm automation token).
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: Tag matches package.json version
+        run: |
+          v=$(node -p "require('./package.json').version")
+          [ "v$v" = "$GITHUB_REF_NAME" ] || { echo "Tag $GITHUB_REF_NAME does not match package.json version $v"; exit 1; }
+      - run: pnpm install --frozen-lockfile
+      # prepublishOnly runs build + typecheck + unit tests before publishing.
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build && pnpm test:e2e
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
