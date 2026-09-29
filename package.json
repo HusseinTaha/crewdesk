@@ -1,6 +1,6 @@
 {
   "name": "crewdesk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "One local dashboard for all your Claude Code sessions: answer questions, approve permissions and send follow-ups, routed back to the exact session.",
   "keywords": [
     "claude-code",
