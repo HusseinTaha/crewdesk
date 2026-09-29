@@ -39,6 +39,8 @@ export interface HubConfig {
   permissionExpiryMs: number;
   policyFile: string;
   webDir: string | null;
+  /** Secret required by the shutdown endpoint (written to hub.token by the daemon). */
+  adminToken: string | null;
 }
 
 export function hubHome(): string {
@@ -102,6 +104,7 @@ export function loadConfig(overrides: Partial<HubConfig> = {}): HubConfig {
     permissionExpiryMs: envInt("CLAUDE_HUB_PERMISSION_EXPIRY") ?? file.permissionExpiryMs ?? 0,
     policyFile: path.join(home, "policies.yaml"),
     webDir: null,
+    adminToken: null,
     ...overrides,
   };
   return cfg;

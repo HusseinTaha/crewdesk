@@ -1,0 +1,16 @@
+{
+  "name": "@cch/hook",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@cch/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  }
+}

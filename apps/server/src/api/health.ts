@@ -31,4 +31,13 @@ export function registerHealthRoutes(app: FastifyInstance, hub: Hub) {
     heartbeatTimeout: hub.config.heartbeatTimeout,
     version: VERSION,
   }));
+  /** Graceful shutdown for `claude-hub stop`; requires the per-run token from hub.token. */
+  app.post("/api/admin/shutdown", async (req, reply) => {
+    const token = req.headers["x-hub-token"];
+    if (!hub.config.adminToken || token !== hub.config.adminToken) {
+      return reply.code(401).send({ error: { code: "UNAUTHORIZED", message: "Invalid admin token." } });
+    }
+    setTimeout(() => void app.close().then(() => process.exit(0)), 50);
+    return { success: true };
+  });
 }
