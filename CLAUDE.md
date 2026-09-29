@@ -21,6 +21,7 @@ Crewdesk: a local hub + web dashboard that receives Claude Code hook events from
 | `pnpm test:live` | Opt-in, runs a real `claude -p` (costs tokens) |
 | `pnpm typecheck` | Type-check every package (`lint` is an alias) |
 | `bash scripts/smoke.sh` | macOS/Linux CLI smoke test (installer, daemon, pid detection, fail-open); needs `pnpm build` |
+| `node scripts/screenshots.mjs` | Regenerate README screenshots (`docs/images/`) from a throwaway hub with made-up sessions; needs `pnpm build` |
 | `pnpm start` | Run the built hub in the foreground |
 
 `bin/crewdesk.mjs` and `bin/crewdesk-hook.mjs` load the **built** `dist/` outputs, so rebuild after changing server or hook code before testing via the CLI or E2E.
@@ -41,5 +42,6 @@ Hook behavior per event type (and terminal interplay, e.g. permission dialogs st
 
 ## Conventions
 
-- CI: `.github/workflows/ci.yml` (Linux/macOS/Windows × Node 22.13/24); `release.yml` publishes to npm on a `v*` tag matching `package.json` version.
+- CI: `.github/workflows/ci.yml` (Linux/macOS/Windows × Node 22.13/24). Release: `npm version patch` then push the tag; `release.yml` publishes with provenance (needs `NPM_TOKEN` secret) or, if the version is already on npm (local publish), only creates the GitHub release. npm enforces 2FA, so a local `npm publish` needs an OTP or a bypass-2FA token.
+- README images use absolute `raw.githubusercontent.com` URLs so they render on npmjs.com too. Never screenshot real sessions: the hook derives the account from `CLAUDE_CONFIG_DIR`, so unset it (the script does).
 - Commit messages: no `Co-Authored-By: Claude` trailer (user preference).
