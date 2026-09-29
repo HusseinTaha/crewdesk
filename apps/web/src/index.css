@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-st-blue: #3b82f6;
+  --color-st-green: #22c55e;
+  --color-st-yellow: #eab308;
+  --color-st-orange: #f97316;
+  --color-st-red: #ef4444;
+  --color-st-purple: #a855f7;
+  --color-st-gray: #6b7280;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --card-2: #eef1f5;
+  --line: #d9dee6;
+  --fg: #111827;
+  --muted: #5b6574;
+  color-scheme: light;
+}
+
+:root.dark {
+  --bg: #0b0d10;
+  --card: #151922;
+  --card-2: #1b202b;
+  --line: #252b36;
+  --fg: #f4f7fa;
+  --muted: #8b95a5;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
