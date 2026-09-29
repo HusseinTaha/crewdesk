@@ -24,11 +24,17 @@ jobs:
         run: |
           v=$(node -p "require('./package.json').version")
           [ "v$v" = "$GITHUB_REF_NAME" ] || { echo "Tag $GITHUB_REF_NAME does not match package.json version $v"; exit 1; }
+      - name: Skip npm publish if this version is already on npm (published locally)
+        id: npm
+        run: |
+          v=$(node -p "require('./package.json').version")
+          if npm view "crewdesk@$v" version >/dev/null 2>&1; then echo "published=true" >> "$GITHUB_OUTPUT"; else echo "published=false" >> "$GITHUB_OUTPUT"; fi
       - run: pnpm install --frozen-lockfile
       # prepublishOnly runs build + typecheck + unit tests before publishing.
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm build && pnpm test:e2e
       - run: npm publish --access public --provenance
+        if: steps.npm.outputs.published != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: GitHub release
