@@ -67,7 +67,7 @@ export function Dashboard({ state, agentFor, search, groupByProject, onOpenAgent
         if (!matchesAgent(a)) return false;
         if (byType && !byType(e)) return false;
         if (!q) return true;
-        const hay = [a?.name, a?.projectName, e.type, e.message, eventSummary(e)].join(" ").toLowerCase();
+        const hay = [a?.name, a?.projectName, e.type, e.message, eventSummary(e), JSON.stringify(e.payload ?? {})].join(" ").toLowerCase();
         return hay.includes(q);
       }),
     );
