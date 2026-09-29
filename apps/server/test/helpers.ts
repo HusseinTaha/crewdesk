@@ -13,7 +13,7 @@ export interface TestHub extends BuiltServer {
 }
 
 export function tempHome(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "cch-test-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "crewdesk-test-"));
 }
 
 /** Start a real hub on an ephemeral port with an isolated home directory. */

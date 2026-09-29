@@ -1,4 +1,4 @@
-import type { Agent, HubEvent } from "@cch/shared/types";
+import type { Agent, HubEvent } from "@crewdesk/shared/types";
 import { clock, EVENT_LABEL } from "../lib/format";
 
 const COLOR: Partial<Record<HubEvent["type"], string>> = {

@@ -5,12 +5,12 @@ import path from "node:path";
 export const RETRY_DELAYS_MS = [100, 500, 1000, 2000];
 
 export function hubHome(): string {
-  return process.env.CLAUDE_HUB_HOME ?? path.join(os.homedir(), ".claude-control-center");
+  return process.env.CREWDESK_HOME ?? path.join(os.homedir(), ".crewdesk");
 }
 
-/** Hub base URL: CLAUDE_HUB_URL, else host/port from config.json, else the default. */
+/** Hub base URL: CREWDESK_URL, else host/port from config.json, else the default. */
 export function hubUrl(): string {
-  if (process.env.CLAUDE_HUB_URL) return process.env.CLAUDE_HUB_URL.replace(/\/+$/, "");
+  if (process.env.CREWDESK_URL) return process.env.CREWDESK_URL.replace(/\/+$/, "");
   let host = "127.0.0.1";
   let port = 7777;
   try {
@@ -20,7 +20,7 @@ export function hubUrl(): string {
   } catch {
     /* defaults */
   }
-  if (process.env.CLAUDE_HUB_PORT) port = Number(process.env.CLAUDE_HUB_PORT);
+  if (process.env.CREWDESK_PORT) port = Number(process.env.CREWDESK_PORT);
   if (host === "0.0.0.0") host = "127.0.0.1";
   return `http://${host}:${port}`;
 }
@@ -76,7 +76,7 @@ export async function request<T = any>(method: string, url: string, body?: unkno
 }
 
 export function debugLog(msg: string) {
-  if (!process.env.CLAUDE_HUB_HOOK_DEBUG) return;
+  if (!process.env.CREWDESK_HOOK_DEBUG) return;
   try {
     const file = path.join(hubHome(), "logs", "hook.log");
     fs.mkdirSync(path.dirname(file), { recursive: true });

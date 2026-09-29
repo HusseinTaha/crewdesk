@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // Simulates four Claude Code sessions against a running hub using the real hook bridge.
-// Usage: node scripts/demo.mjs   (hub at CLAUDE_HUB_URL, default http://127.0.0.1:7777)
+// Usage: node scripts/demo.mjs   (hub at CREWDESK_URL, default http://127.0.0.1:7777)
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const hookBin = path.join(root, "bin", "claude-hub-hook.mjs");
+const hookBin = path.join(root, "bin", "crewdesk-hook.mjs");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function hook(sub, session, project, input = {}) {

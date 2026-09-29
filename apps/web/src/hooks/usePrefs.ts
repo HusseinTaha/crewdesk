@@ -7,7 +7,7 @@ export interface Prefs {
   groupByProject: boolean;
 }
 
-const KEY = "cch.prefs";
+const KEY = "crewdesk.prefs";
 const DEFAULTS: Prefs = { sound: true, desktop: false, theme: "dark", groupByProject: false };
 
 function load(): Prefs {

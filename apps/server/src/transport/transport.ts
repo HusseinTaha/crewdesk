@@ -1,4 +1,4 @@
-import type { HubResponse, WaitResult } from "@cch/shared";
+import type { HubResponse, WaitResult } from "@crewdesk/shared";
 
 /**
  * Delivers decisions back to a Claude Code session. The rest of the hub only talks to this interface,

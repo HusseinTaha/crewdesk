@@ -10,7 +10,7 @@ import {
   type ListEventsQuery,
   type Priority,
   type RespondInput,
-} from "@cch/shared";
+} from "@crewdesk/shared";
 import type { Db } from "../db/database.js";
 import type { Logger } from "../logger.js";
 import type { AgentService } from "./agent.service.js";

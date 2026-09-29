@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import type { Agent, HubEvent, PermissionPayload, QuestionItem } from "@cch/shared/types";
+import type { Agent, HubEvent, PermissionPayload, QuestionItem } from "@crewdesk/shared/types";
 import { api, ApiError } from "../lib/api";
 import { EVENT_LABEL, timeAgo } from "../lib/format";
 

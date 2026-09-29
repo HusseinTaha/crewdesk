@@ -1,4 +1,4 @@
-import type { HubEvent, WaitResult } from "@cch/shared";
+import type { HubEvent, WaitResult } from "@crewdesk/shared";
 import type { Logger } from "../logger.js";
 import { HookTransport } from "../transport/hook.transport.js";
 import type { SessionTransport } from "../transport/transport.js";

@@ -17,9 +17,9 @@ import { VERSION } from "./version.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 /** Repo/package root: works from src/ (tsx) and dist/ (bundle), both two levels under apps/server. */
 const root = path.resolve(here, "../../..");
-const cliScript = process.env.CLAUDE_HUB_CLI_SCRIPT ?? path.join(root, "bin", "claude-hub.mjs");
-const hookScript = process.env.CLAUDE_HUB_HOOK_SCRIPT ?? path.join(root, "bin", "claude-hub-hook.mjs");
-const webDir = process.env.CLAUDE_HUB_WEB_DIR ?? path.join(root, "apps", "web", "dist");
+const cliScript = process.env.CREWDESK_CLI_SCRIPT ?? path.join(root, "bin", "crewdesk.mjs");
+const hookScript = process.env.CREWDESK_HOOK_SCRIPT ?? path.join(root, "bin", "crewdesk-hook.mjs");
+const webDir = process.env.CREWDESK_WEB_DIR ?? path.join(root, "apps", "web", "dist");
 
 const c = {
   ok: (s: string) => `\x1b[32m✓\x1b[0m ${s}`,
@@ -29,9 +29,9 @@ const c = {
   dim: (s: string) => `\x1b[2m${s}\x1b[0m`,
 };
 
-const HELP = `Claude Control Center ${VERSION}
+const HELP = `Crewdesk ${VERSION}
 
-Usage: claude-hub <command> [options]
+Usage: crewdesk <command> [options]
 
 Commands:
   start [--foreground]   Start the hub (background daemon by default)
@@ -46,8 +46,8 @@ Commands:
   doctor                 Diagnose the installation
   uninstall              Remove hooks and optionally the database
 
-Environment: CLAUDE_HUB_HOME, CLAUDE_HUB_PORT, CLAUDE_HUB_HOST, CLAUDE_HUB_DB,
-             CLAUDE_HUB_HEARTBEAT_TIMEOUT, LOG_LEVEL
+Environment: CREWDESK_HOME, CREWDESK_PORT, CREWDESK_HOST, CREWDESK_DB,
+             CREWDESK_HEARTBEAT_TIMEOUT, LOG_LEVEL
 `;
 
 function flag(args: string[], name: string) {
@@ -86,7 +86,7 @@ function openBrowser(url: string) {
 async function cmdStart(cfg: HubConfig, args: string[]) {
   if (flag(args, "--foreground")) {
     const daemon = flag(args, "--daemon");
-    if (!daemon) console.log(c.bold("Claude Control Center"));
+    if (!daemon) console.log(c.bold("Crewdesk"));
     await runForeground({ ...cfg, webDir }, { daemon });
     if (!daemon) {
       console.log(`\nDashboard:\n${baseUrl(cfg)}\n\nWaiting for Claude Code sessions... (Ctrl+C to stop)`);
@@ -94,7 +94,7 @@ async function cmdStart(cfg: HubConfig, args: string[]) {
     return;
   }
   const { pid, already } = await startDaemon(cfg, cliScript);
-  console.log(c.bold("Claude Control Center\n"));
+  console.log(c.bold("Crewdesk\n"));
   if (already) console.log(c.ok(`Already running (pid ${pid})`));
   else {
     console.log(c.ok("Server started"));
@@ -178,7 +178,7 @@ async function cmdConfigure(cfg: HubConfig, args: string[]) {
   if (!fs.existsSync(policy)) {
     fs.writeFileSync(
       policy,
-      `# Permission policies for Claude Control Center. First matching rule wins.\n# action: allow | deny | ask. Destructive or chained commands are never auto-allowed.\npermissions: []\n#  - tool: "Bash"\n#    match: "git status"\n#    action: allow\n`,
+      `# Permission policies for Crewdesk. First matching rule wins.\n# action: allow | deny | ask. Destructive or chained commands are never auto-allowed.\npermissions: []\n#  - tool: "Bash"\n#    match: "git status"\n#    action: allow\n`,
     );
   }
   if (!fs.existsSync(hookScript)) console.log(c.warn(`Hook script not found at ${hookScript} — run \`pnpm build\``));
@@ -222,11 +222,11 @@ async function cmdUninstall(cfg: HubConfig, args: string[]) {
     for (const f of [cfg.database, `${cfg.database}-wal`, `${cfg.database}-shm`]) fs.rmSync(f, { force: true });
     console.log(c.ok("Database deleted"));
   } else console.log(c.ok(`Database kept at ${cfg.database}`));
-  console.log(`\nTo remove the application: npm rm -g claude-control-center (or pnpm unlink --global).`);
+  console.log(`\nTo remove the application: npm rm -g crewdesk (or pnpm unlink --global).`);
 }
 
 async function cmdDoctor(cfg: HubConfig) {
-  console.log(c.bold("Claude Control Center Doctor\n"));
+  console.log(c.bold("Crewdesk Doctor\n"));
   let problems = 0;
   const check = (ok: boolean, label: string, hint?: string) => {
     console.log(ok ? c.ok(label) : c.bad(`${label}${hint ? c.dim(` — ${hint}`) : ""}`));
@@ -253,7 +253,7 @@ async function cmdDoctor(cfg: HubConfig) {
   }
   check(dbOk, `Database ${cfg.database}`, "directory not writable");
   const h = await health(cfg);
-  check(Boolean(h), `Server ${baseUrl(cfg)}`, "not running — `claude-hub start`");
+  check(Boolean(h), `Server ${baseUrl(cfg)}`, "not running — `crewdesk start`");
   if (h) check(h.database === "ok", `Port ${cfg.port} (hub pid ${h.pid})`);
   else {
     const net = await import("node:net");
@@ -272,7 +272,7 @@ async function cmdDoctor(cfg: HubConfig) {
   check(Boolean(claudeVersion), `Claude Code detected${claudeVersion ? ` (${claudeVersion})` : ""}`, "`claude` not on PATH");
   const targets = detectConfigDirs().map((d) => describeTarget(d));
   const installed = targets.filter((t) => t.installed);
-  check(installed.length > 0, `Hook configuration (${installed.map((t) => t.label).join(", ") || "none"})`, "run `claude-hub configure`");
+  check(installed.length > 0, `Hook configuration (${installed.map((t) => t.label).join(", ") || "none"})`, "run `crewdesk configure`");
   for (const t of targets.filter((t) => !t.installed)) console.log(c.dim(`    not installed in ${t.label}`));
   check(fs.existsSync(hookScript) && fs.existsSync(path.join(root, "packages", "hook", "dist", "hook.js")), "Hook executable", "run `pnpm build`");
   check(fs.existsSync(path.join(webDir, "index.html")), "Web UI build", "run `pnpm build`");
@@ -281,7 +281,7 @@ async function cmdDoctor(cfg: HubConfig) {
 }
 
 async function firstRun(cfg: HubConfig) {
-  console.log(c.bold("Welcome to Claude Control Center\n"));
+  console.log(c.bold("Welcome to Crewdesk\n"));
   console.log("This will:\n");
   console.log("  ✓ Create a local database");
   console.log("  ✓ Configure Claude Code hooks");
@@ -335,7 +335,7 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (invokedDirectly || process.env.CLAUDE_HUB_RUN_CLI === "1") {
+if (invokedDirectly || process.env.CREWDESK_RUN_CLI === "1") {
   main().catch((err) => {
     console.error(c.bad((err as Error).message));
     process.exit(1);

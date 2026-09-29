@@ -1,6 +1,6 @@
 # Hooks
 
-`claude-hub configure` registers these hooks. Each one runs `node <repo>/bin/claude-hub-hook.mjs <sub>`.
+`crewdesk configure` registers these hooks. Each one runs `node <repo>/bin/crewdesk-hook.mjs <sub>`.
 
 | Event | Sub-command | Timeout (s) | Behaviour |
 |---|---|---|---|
@@ -25,4 +25,4 @@
 Hooks always exit 0.
 - **Hub unreachable:** retried at 100 ms, 500 ms, 1 s and 2 s (5 attempts). After that the hook prints nothing, so Claude Code proceeds normally.
 - **Hub restart:** a waiting hook keeps retrying its long-poll for about 60 s, so the hub can restart without losing the request.
-- **Debugging:** set `CLAUDE_HUB_HOOK_DEBUG=1` to log to `~/.claude-control-center/logs/hook.log`.
+- **Debugging:** set `CREWDESK_HOOK_DEBUG=1` to log to `~/.crewdesk/logs/hook.log`.

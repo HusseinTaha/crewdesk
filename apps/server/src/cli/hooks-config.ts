@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 /** Marker used to recognise (and later remove) hooks we installed. Never touch anything else. */
-export const HOOK_MARKER = "claude-hub-hook";
+export const HOOK_MARKER = "crewdesk-hook";
 
 export interface ConfigTarget {
   dir: string;
@@ -145,7 +145,7 @@ export function backupSettings(target: ConfigTarget, backupDir: string): string 
 
 /** Write settings atomically, re-validate, and roll back to the backup if anything goes wrong. */
 function writeValidated(file: string, data: Record<string, unknown>, backup: string | null) {
-  const tmp = `${file}.cch-${process.pid}.tmp`;
+  const tmp = `${file}.crewdesk-${process.pid}.tmp`;
   try {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + "\n");

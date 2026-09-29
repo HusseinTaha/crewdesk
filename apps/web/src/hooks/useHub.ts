@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import type { Agent, HubEvent, WsMessage } from "@cch/shared/types";
+import type { Agent, HubEvent, WsMessage } from "@crewdesk/shared/types";
 import { api } from "../lib/api";
 
 export interface HubState {

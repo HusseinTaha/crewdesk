@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { AgentIdSchema, HeartbeatSchema, RegisterAgentSchema, UpdateAgentSchema } from "@cch/shared";
+import { AgentIdSchema, HeartbeatSchema, RegisterAgentSchema, UpdateAgentSchema } from "@crewdesk/shared";
 import type { Hub } from "../hub.js";
 import { parse } from "./validate.js";
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Agent, HubEvent } from "@cch/shared/types";
+import type { Agent, HubEvent } from "@crewdesk/shared/types";
 import { ActivityFeed } from "../components/ActivityFeed";
 import { StatusBadge } from "../components/AgentCard";
 import { RequestCard } from "../components/RequestCard";

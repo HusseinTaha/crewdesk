@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const entry = fileURLToPath(new URL("../apps/server/dist/cli.js", import.meta.url));
 if (!existsSync(entry)) {
-  console.error("claude-hub is not built yet. Run `pnpm install && pnpm build` in the repository.");
+  console.error("crewdesk is not built yet. Run `pnpm install && pnpm build` in the repository.");
   process.exit(1);
 }
 const { main } = await import(pathToFileURL(entry).href);

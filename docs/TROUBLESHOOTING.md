@@ -1,8 +1,8 @@
 # Troubleshooting
 
-**Hub not starting:** run `claude-hub doctor`. It checks the port, database, Node version, Claude Code, hooks and build. The log is at `claude-hub logs`.
+**Hub not starting:** run `crewdesk doctor`. It checks the port, database, Node version, Claude Code, hooks and build. The log is at `crewdesk logs`.
 
-**A Claude session does not appear:** check that `claude-hub doctor` lists hooks for the account you launched with (`CLAUDE_CONFIG_DIR`). Restart the session or run `/hooks`. Then set `CLAUDE_HUB_HOOK_DEBUG=1` and read `~/.claude-control-center/logs/hook.log`.
+**A Claude session does not appear:** check that `crewdesk doctor` lists hooks for the account you launched with (`CLAUDE_CONFIG_DIR`). Restart the session or run `/hooks`. Then set `CREWDESK_HOOK_DEBUG=1` and read `~/.crewdesk/logs/hook.log`.
 
 **A question appears but the answer never arrives:** the event stays PENDING or PROCESSING until the hook picks it up. Check the event in History (session id, status, close reason). If the hook timed out, the event is CANCELLED with the reason "Timed out waiting", and Claude asked in the terminal instead.
 

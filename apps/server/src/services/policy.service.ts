@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import YAML from "yaml";
-import { globMatch, PolicyFileSchema, type PolicyRule } from "@cch/shared";
+import { globMatch, PolicyFileSchema, type PolicyRule } from "@crewdesk/shared";
 import type { Logger } from "../logger.js";
 
 export interface PolicyDecision {

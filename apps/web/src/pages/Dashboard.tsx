@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Agent, AgentStatus, HubEvent } from "@cch/shared/types";
+import type { Agent, AgentStatus, HubEvent } from "@crewdesk/shared/types";
 import { ActivityFeed, eventSummary } from "../components/ActivityFeed";
 import { AgentCard } from "../components/AgentCard";
 import { RequestCard, type RequestCardHandle } from "../components/RequestCard";

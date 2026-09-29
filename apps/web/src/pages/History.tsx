@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EVENT_STATUSES, type Agent, type HubEvent } from "@cch/shared/types";
+import { EVENT_STATUSES, type Agent, type HubEvent } from "@crewdesk/shared/types";
 import { eventSummary } from "../components/ActivityFeed";
 import { api } from "../lib/api";
 import { dateTime, EVENT_LABEL } from "../lib/format";

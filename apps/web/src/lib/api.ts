@@ -1,4 +1,4 @@
-import type { Agent, HubEvent, PolicyRule, RespondInput } from "@cch/shared";
+import type { Agent, HubEvent, PolicyRule, RespondInput } from "@crewdesk/shared";
 
 export class ApiError extends Error {
   constructor(

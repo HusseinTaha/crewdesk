@@ -1,4 +1,4 @@
-import type { WsMessage } from "@cch/shared";
+import type { WsMessage } from "@crewdesk/shared";
 
 type Listener = (msg: WsMessage) => void;
 

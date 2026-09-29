@@ -8,6 +8,6 @@ export default defineConfig({
   outDir: "dist",
   clean: true,
   removeNodeProtocol: false,
-  noExternal: ["@cch/shared"],
+  noExternal: ["@crewdesk/shared"],
   banner: { js: "import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);" },
 });

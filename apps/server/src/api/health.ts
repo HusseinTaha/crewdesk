@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { HealthInfo } from "@cch/shared";
+import type { HealthInfo } from "@crewdesk/shared";
 import type { Hub } from "../hub.js";
 import { VERSION } from "../version.js";
 
@@ -31,7 +31,7 @@ export function registerHealthRoutes(app: FastifyInstance, hub: Hub) {
     heartbeatTimeout: hub.config.heartbeatTimeout,
     version: VERSION,
   }));
-  /** Graceful shutdown for `claude-hub stop`; requires the per-run token from hub.token. */
+  /** Graceful shutdown for `crewdesk stop`; requires the per-run token from hub.token. */
   app.post("/api/admin/shutdown", async (req, reply) => {
     const token = req.headers["x-hub-token"];
     if (!hub.config.adminToken || token !== hub.config.adminToken) {

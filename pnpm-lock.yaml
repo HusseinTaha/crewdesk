@@ -7,6 +7,25 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@fastify/static':
+        specifier: ^8.2.0
+        version: 8.3.0
+      '@fastify/websocket':
+        specifier: ^11.2.0
+        version: 11.3.1
+      fastify:
+        specifier: ^5.6.0
+        version: 5.12.5
+      ulid:
+        specifier: ^3.0.1
+        version: 3.0.2
+      yaml:
+        specifier: ^2.8.0
+        version: 2.9.1
+      zod:
+        specifier: ^4.1.0
+        version: 4.6.5
     devDependencies:
       '@playwright/test':
         specifier: ^1.55.0
@@ -32,7 +51,7 @@ importers:
 
   apps/server:
     dependencies:
-      '@cch/shared':
+      '@crewdesk/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@fastify/static':
@@ -69,7 +88,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@cch/shared':
+      '@crewdesk/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       react:
@@ -100,7 +119,7 @@ importers:
 
   packages/hook:
     dependencies:
-      '@cch/shared':
+      '@crewdesk/shared':
         specifier: workspace:*
         version: link:../shared
     devDependencies:

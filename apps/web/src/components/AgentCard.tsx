@@ -1,4 +1,4 @@
-import type { Agent } from "@cch/shared/types";
+import type { Agent } from "@crewdesk/shared/types";
 import { STATUS_STYLE, timeAgo } from "../lib/format";
 
 export function StatusBadge({ status }: { status: Agent["status"] }) {

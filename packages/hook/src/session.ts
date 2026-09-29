@@ -67,8 +67,8 @@ export function agentMeta(input: HookInput, pid?: number): AgentMeta {
   const cwd = process.env.CLAUDE_PROJECT_DIR || input.cwd || process.cwd();
   const configDir = process.env.CLAUDE_CONFIG_DIR;
   return {
-    name: process.env.CLAUDE_HUB_AGENT_NAME || undefined,
-    project: process.env.CLAUDE_HUB_PROJECT || path.basename(cwd),
+    name: process.env.CREWDESK_AGENT_NAME || undefined,
+    project: process.env.CREWDESK_PROJECT || path.basename(cwd),
     cwd,
     pid: pid ?? readSessionCache(input.session_id).pid,
     account: configDir ? path.basename(configDir) : undefined,
@@ -114,7 +114,7 @@ function processTable(): Map<number, Proc> {
  * (the hub marks a session OFFLINE when this pid dies). Returns undefined when it can't be determined.
  */
 export function findClaudePid(): number | undefined {
-  if (process.env.CLAUDE_HUB_CLAUDE_PID) return Number(process.env.CLAUDE_HUB_CLAUDE_PID) || undefined;
+  if (process.env.CREWDESK_CLAUDE_PID) return Number(process.env.CREWDESK_CLAUDE_PID) || undefined;
   // Claude Code exports its own pid to hooks (observed in 2.1.x); prefer it over walking the tree.
   if (process.env.CLAUDE_PID && Number(process.env.CLAUDE_PID) > 0) return Number(process.env.CLAUDE_PID);
   try {

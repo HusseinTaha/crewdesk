@@ -16,9 +16,9 @@ let settingsFile: string;
 
 beforeAll(async () => {
   hub = await startTestHub({ waiterGraceMs: 3000 });
-  work = fs.mkdtempSync(path.join(os.tmpdir(), "cch-live-"));
+  work = fs.mkdtempSync(path.join(os.tmpdir(), "crewdesk-live-"));
   settingsFile = path.join(work, "hub-settings.json");
-  const hooks = mergeOurHooks({}, path.resolve("bin/claude-hub-hook.mjs"));
+  const hooks = mergeOurHooks({}, path.resolve("bin/crewdesk-hook.mjs"));
   fs.writeFileSync(settingsFile, JSON.stringify({ hooks }, null, 2));
 });
 
@@ -32,7 +32,7 @@ function claude(prompt: string) {
     ["-p", prompt, "--settings", settingsFile, "--permission-mode", "default", "--model", "haiku", "--output-format", "text"],
     {
       cwd: work,
-      env: { ...process.env, CLAUDE_HUB_URL: hub.url, CLAUDE_HUB_HOME: hub.home, CLAUDE_HUB_IDLE_PROMPTS: "0" },
+      env: { ...process.env, CREWDESK_URL: hub.url, CREWDESK_HOME: hub.home, CREWDESK_IDLE_PROMPTS: "0" },
       stdio: ["ignore", "pipe", "pipe"],
     },
   );

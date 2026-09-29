@@ -1,9 +1,9 @@
 import { debugLog, HANDLERS } from "./handlers.js";
 import type { HookInput } from "./session.js";
 
-const USAGE = `claude-hub-hook <command>
+const USAGE = `crewdesk-hook <command>
 
-Claude Code hook bridge for Claude Control Center. Reads the hook JSON from stdin.
+Claude Code hook bridge for Crewdesk. Reads the hook JSON from stdin.
 
 Commands:
   register       SessionStart: register the session with the hub
@@ -15,9 +15,9 @@ Commands:
   session-end    SessionEnd: mark the session offline
 
 Environment:
-  CLAUDE_HUB_URL          hub base URL (default http://127.0.0.1:7777)
-  CLAUDE_HUB_AGENT_NAME   display name for this session
-  CLAUDE_HUB_HOOK_DEBUG   log to ~/.claude-control-center/logs/hook.log
+  CREWDESK_URL          hub base URL (default http://127.0.0.1:7777)
+  CREWDESK_AGENT_NAME   display name for this session
+  CREWDESK_HOOK_DEBUG   log to ~/.crewdesk/logs/hook.log
 `;
 
 async function readStdin(): Promise<string> {
@@ -35,7 +35,7 @@ async function main(): Promise<number> {
   }
   const handler = HANDLERS[cmd];
   if (!handler) {
-    process.stderr.write(`claude-hub-hook: unknown command "${cmd}"\n`);
+    process.stderr.write(`crewdesk-hook: unknown command "${cmd}"\n`);
     return 0; // never break Claude Code because of a misconfiguration
   }
   let input: HookInput;

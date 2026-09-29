@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { PolicyRule } from "@cch/shared";
+import type { PolicyRule } from "@crewdesk/shared";
 import { api } from "../lib/api";
 
 export function Policies() {

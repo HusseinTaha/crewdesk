@@ -25,8 +25,8 @@ function runHook(sub: string, input: Record<string, unknown>, env: Record<string
   const child = spawn(process.execPath, ["--import", "tsx", hookSrc, sub], {
     env: {
       ...process.env,
-      CLAUDE_HUB_URL: hub.url,
-      CLAUDE_HUB_HOME: hub.home,
+      CREWDESK_URL: hub.url,
+      CREWDESK_HOME: hub.home,
       CLAUDE_PID: String(process.pid),
       CLAUDE_PROJECT_DIR: "/work/shop",
       CLAUDE_CONFIG_DIR: "/home/me/.claude-accounts/work",
@@ -53,7 +53,7 @@ async function waitForPending(type: string, timeoutMs = 10000) {
   throw new Error(`no pending ${type}`);
 }
 
-describe("claude-hub-hook", () => {
+describe("crewdesk-hook", () => {
   it("register creates an agent with project, account and pid", async () => {
     const r = await runHook("register", { hook_event_name: "SessionStart", source: "startup" }).done;
     expect(r.code).toBe(0);
@@ -77,7 +77,7 @@ describe("claude-hub-hook", () => {
     expect(ev.payload.destructive).toBe(true);
     await api(hub, "POST", `/api/events/${ev.id}/respond`, { action: "deny", response: "not now" });
     const out = JSON.parse((await run.done).stdout);
-    expect(out.hookSpecificOutput.decision).toEqual({ behavior: "deny", message: "Denied by Claude Control Center: not now" });
+    expect(out.hookSpecificOutput.decision).toEqual({ behavior: "deny", message: "Denied by Crewdesk: not now" });
   });
 
   it("permission answered in the terminal: hook killed -> event cancelled", async () => {
@@ -98,7 +98,7 @@ describe("claude-hub-hook", () => {
     expect(out.hookSpecificOutput).toEqual({
       hookEventName: "PreToolUse",
       permissionDecision: "allow",
-      permissionDecisionReason: "Answered from Claude Control Center",
+      permissionDecisionReason: "Answered from Crewdesk",
       updatedInput: { questions, answers: { "Which database?": "PostgreSQL" } },
     });
   });
@@ -119,7 +119,7 @@ describe("claude-hub-hook", () => {
   });
 
   it("stop: gives up after idle wait and withdraws the prompt", async () => {
-    const r = await runHook("stop", { last_assistant_message: "x" }, { CLAUDE_HUB_IDLE_WAIT: "1" }).done;
+    const r = await runHook("stop", { last_assistant_message: "x" }, { CREWDESK_IDLE_WAIT: "1" }).done;
     expect(r.stdout).toBe("");
     const evs = (await api(hub, "GET", "/api/events?type=prompt.created")).body.events;
     expect(evs[0].status).toBe("CANCELLED");
@@ -127,7 +127,7 @@ describe("claude-hub-hook", () => {
 
   it("fails open when the hub is down", async () => {
     const start = Date.now();
-    const r = await runHook("permission", { tool_name: "Bash", tool_input: { command: "ls" } }, { CLAUDE_HUB_URL: "http://127.0.0.1:9" }).done;
+    const r = await runHook("permission", { tool_name: "Bash", tool_input: { command: "ls" } }, { CREWDESK_URL: "http://127.0.0.1:9" }).done;
     expect(r.code).toBe(0);
     expect(r.stdout).toBe("");
     expect(Date.now() - start).toBeLessThan(15000);

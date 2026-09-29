@@ -4,8 +4,8 @@
 apps/server     Fastify hub: api/, services/, transport/ (SessionTransport + HookTransport), db/, websocket/, cli/
 apps/web        React 19 + Vite + Tailwind v4 dashboard
 packages/shared Types, Zod schemas, operation/risk helpers
-packages/hook   claude-hub-hook bridge (bundled, no zod, fast startup)
-bin/            claude-hub and claude-hub-hook launchers
+packages/hook   crewdesk-hook bridge (bundled, no zod, fast startup)
+bin/            crewdesk and crewdesk-hook launchers
 test/e2e        Playwright specs (real hub + real hook processes)
 test/live       Opt-in tests against a real `claude -p`
 ```

@@ -22,7 +22,7 @@ const read = (dir: string) => JSON.parse(fs.readFileSync(path.join(dir, "setting
 describe("hook installation", () => {
   it("adds every hook, keeps unrelated hooks and settings, and backs up first", () => {
     const { dir, backups } = setup({ model: "opus", hooks: foreign });
-    const r = installHooks(describeTarget(dir), "/opt/cch/bin/claude-hub-hook.mjs", backups);
+    const r = installHooks(describeTarget(dir), "/opt/crewdesk/bin/crewdesk-hook.mjs", backups);
     expect(r.changed).toBe(true);
     expect(fs.readdirSync(backups)).toHaveLength(1);
     const s = read(dir);
@@ -32,7 +32,7 @@ describe("hook installation", () => {
     expect(s.hooks.Stop).toHaveLength(2);
     for (const p of HOOK_PLAN) {
       const ours = s.hooks[p.event].at(-1);
-      expect(ours.hooks[0].command).toContain(`claude-hub-hook.mjs" ${p.sub}`);
+      expect(ours.hooks[0].command).toContain(`crewdesk-hook.mjs" ${p.sub}`);
       if (p.matcher) expect(ours.matcher).toBe(p.matcher);
     }
     expect(s.hooks.PreToolUse.at(-1).matcher).toBe("AskUserQuestion");
@@ -41,22 +41,22 @@ describe("hook installation", () => {
 
   it("is idempotent", () => {
     const { dir, backups } = setup({ hooks: foreign });
-    installHooks(describeTarget(dir), "/x/claude-hub-hook.mjs", backups);
+    installHooks(describeTarget(dir), "/x/crewdesk-hook.mjs", backups);
     const first = read(dir);
-    const r = installHooks(describeTarget(dir), "/x/claude-hub-hook.mjs", backups);
+    const r = installHooks(describeTarget(dir), "/x/crewdesk-hook.mjs", backups);
     expect(r.changed).toBe(false);
     expect(read(dir)).toEqual(first);
   });
 
   it("creates settings.json when missing", () => {
     const { dir, backups } = setup(null);
-    installHooks(describeTarget(dir), "/x/claude-hub-hook.mjs", backups);
+    installHooks(describeTarget(dir), "/x/crewdesk-hook.mjs", backups);
     expect(Object.keys(read(dir).hooks)).toHaveLength(HOOK_PLAN.length);
   });
 
   it("uninstall removes only our hooks", () => {
     const { dir, backups } = setup({ hooks: foreign, theme: "dark" });
-    installHooks(describeTarget(dir), "/x/claude-hub-hook.mjs", backups);
+    installHooks(describeTarget(dir), "/x/crewdesk-hook.mjs", backups);
     uninstallHooks(describeTarget(dir), backups);
     expect(read(dir)).toEqual({ hooks: foreign, theme: "dark" });
   });
@@ -64,7 +64,7 @@ describe("hook installation", () => {
   it("refuses to touch invalid JSON", () => {
     const { dir, backups } = setup(null);
     fs.writeFileSync(path.join(dir, "settings.json"), "{ broken");
-    expect(() => installHooks(describeTarget(dir), "/x/claude-hub-hook.mjs", backups)).toThrow();
+    expect(() => installHooks(describeTarget(dir), "/x/crewdesk-hook.mjs", backups)).toThrow();
     expect(fs.readFileSync(path.join(dir, "settings.json"), "utf8")).toBe("{ broken");
   });
 

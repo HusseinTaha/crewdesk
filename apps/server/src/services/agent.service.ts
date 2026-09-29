@@ -1,6 +1,6 @@
 import path from "node:path";
 import { ulid } from "ulid";
-import type { Agent, AgentStatus, RegisterAgentInput, UpdateAgentInput } from "@cch/shared";
+import type { Agent, AgentStatus, RegisterAgentInput, UpdateAgentInput } from "@crewdesk/shared";
 import type { Db } from "../db/database.js";
 import type { EventBus } from "./bus.js";
 import { notFound } from "./errors.js";

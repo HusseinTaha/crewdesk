@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { WsMessage } from "@cch/shared";
+import type { WsMessage } from "@crewdesk/shared";
 import type { Hub } from "../hub.js";
 
 export function registerWebSocket(app: FastifyInstance, hub: Hub) {

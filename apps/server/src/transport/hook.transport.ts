@@ -1,8 +1,8 @@
-import type { HubResponse, WaitResult } from "@cch/shared";
+import type { HubResponse, WaitResult } from "@crewdesk/shared";
 import type { SessionTransport, Waiter } from "./transport.js";
 
 /**
- * Hook long-poll transport. A `claude-hub-hook` process blocks inside a Claude Code hook and polls
+ * Hook long-poll transport. A `crewdesk-hook` process blocks inside a Claude Code hook and polls
  * `GET /api/events/:id/wait`; each open poll is a Waiter. Delivering a response settles the waiters
  * for that event, and the hook prints the decision in the format Claude Code expects.
  */

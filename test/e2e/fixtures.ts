@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 
 export const HUB = "http://127.0.0.1:7788";
-const hookBin = path.resolve("bin/claude-hub-hook.mjs");
+const hookBin = path.resolve("bin/crewdesk-hook.mjs");
 
 export interface HookRun {
   done: Promise<{ code: number | null; stdout: string }>;
@@ -14,8 +14,8 @@ export function hook(sub: string, sessionId: string, project: string, input: Rec
   const child = spawn(process.execPath, [hookBin, sub], {
     env: {
       ...process.env,
-      CLAUDE_HUB_URL: HUB,
-      CLAUDE_HUB_HOME: process.env.CCH_E2E_HOME!,
+      CREWDESK_URL: HUB,
+      CREWDESK_HOME: process.env.CREWDESK_E2E_HOME!,
       CLAUDE_PID: String(process.pid),
       CLAUDE_PROJECT_DIR: `/projects/${project}`,
       CLAUDE_CONFIG_DIR: "",

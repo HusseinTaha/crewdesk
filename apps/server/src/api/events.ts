@@ -7,7 +7,7 @@ import {
   ListEventsQuerySchema,
   RespondSchema,
   WaitQuerySchema,
-} from "@cch/shared";
+} from "@crewdesk/shared";
 import type { Hub } from "../hub.js";
 import { parse } from "./validate.js";
 
@@ -55,7 +55,7 @@ export function registerEventRoutes(app: FastifyInstance, hub: Hub) {
     return { success: true };
   });
 
-  /** Long-poll used by claude-hub-hook while Claude Code waits on a decision. */
+  /** Long-poll used by crewdesk-hook while Claude Code waits on a decision. */
   app.get("/api/events/:id/wait", async (req) => {
     const { id } = parse(IdParams, req.params);
     const q = parse(WaitQuerySchema, req.query);

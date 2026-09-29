@@ -3,7 +3,7 @@ import path from "node:path";
 import Fastify, { type FastifyInstance } from "fastify";
 import fastifyStatic from "@fastify/static";
 import fastifyWebsocket from "@fastify/websocket";
-import type { ApiError } from "@cch/shared";
+import type { ApiError } from "@crewdesk/shared";
 import { registerAgentRoutes } from "./api/agents.js";
 import { registerEventRoutes } from "./api/events.js";
 import { registerHealthRoutes } from "./api/health.js";

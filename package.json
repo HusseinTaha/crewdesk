@@ -1,8 +1,17 @@
 {
-  "name": "claude-control-center",
+  "name": "crewdesk",
   "version": "0.1.0",
-  "private": true,
-  "description": "Local dashboard for managing multiple Claude Code sessions",
+  "description": "One local dashboard for all your Claude Code sessions: answer questions, approve permissions and send follow-ups, routed back to the exact session.",
+  "keywords": [
+    "claude-code",
+    "claude",
+    "ai-agents",
+    "dashboard",
+    "hooks",
+    "permissions",
+    "multi-agent",
+    "developer-tools"
+  ],
   "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@10.30.1",
@@ -10,21 +19,40 @@
     "node": ">=22.13"
   },
   "bin": {
-    "claude-hub": "bin/claude-hub.mjs",
-    "claude-hub-hook": "bin/claude-hub-hook.mjs"
+    "crewdesk": "bin/crewdesk.mjs",
+    "crewdesk-hook": "bin/crewdesk-hook.mjs"
+  },
+  "files": [
+    "bin/",
+    "apps/server/dist/",
+    "apps/web/dist/",
+    "packages/hook/dist/",
+    "docs/*.md",
+    "!docs/CLAUDE-CONTROL-CENTER.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "@fastify/websocket": "^11.2.0",
+    "fastify": "^5.6.0",
+    "ulid": "^3.0.1",
+    "yaml": "^2.8.0",
+    "zod": "^4.1.0"
   },
   "scripts": {
-    "dev": "pnpm -r --parallel --filter @cch/server --filter @cch/web dev",
-    "dev:server": "pnpm --filter @cch/server dev",
-    "dev:web": "pnpm --filter @cch/web dev",
+    "dev": "pnpm -r --parallel --filter @crewdesk/server --filter @crewdesk/web dev",
+    "dev:server": "pnpm --filter @crewdesk/server dev",
+    "dev:web": "pnpm --filter @crewdesk/web dev",
     "build": "pnpm -r build",
-    "start": "node bin/claude-hub.mjs start --foreground",
+    "start": "node bin/crewdesk.mjs start --foreground",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:live": "vitest run --config vitest.live.config.ts",
     "typecheck": "pnpm -r typecheck",
-    "lint": "pnpm -r typecheck"
+    "lint": "pnpm -r typecheck",
+    "prepublishOnly": "pnpm build && pnpm typecheck && pnpm test"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

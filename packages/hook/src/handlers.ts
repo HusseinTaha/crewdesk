@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { assessRisk, summarizeToolInput } from "@cch/shared/operations";
-import type { HubEvent, HubResponse, QuestionItem, WaitResult } from "@cch/shared/types";
+import { assessRisk, summarizeToolInput } from "@crewdesk/shared/operations";
+import type { HubEvent, HubResponse, QuestionItem, WaitResult } from "@crewdesk/shared/types";
 import { debugLog, hubHome, HubHttpError, HubUnavailable, request, sleep } from "./client.js";
 import {
   agentMeta,
@@ -36,11 +36,11 @@ export function hookSettings(): HookSettings {
     const n = Number(v);
     return v !== undefined && v !== "" && Number.isFinite(n) && n >= 0 ? n : dflt;
   };
-  const idleEnv = process.env.CLAUDE_HUB_IDLE_PROMPTS;
+  const idleEnv = process.env.CREWDESK_IDLE_PROMPTS;
   return {
-    questionWaitSeconds: num("CLAUDE_HUB_QUESTION_WAIT", "questionWaitSeconds", 600),
-    idleWaitSeconds: num("CLAUDE_HUB_IDLE_WAIT", "idleWaitSeconds", 1800),
-    permissionWaitSeconds: num("CLAUDE_HUB_PERMISSION_WAIT", "permissionWaitSeconds", 43200),
+    questionWaitSeconds: num("CREWDESK_QUESTION_WAIT", "questionWaitSeconds", 600),
+    idleWaitSeconds: num("CREWDESK_IDLE_WAIT", "idleWaitSeconds", 1800),
+    permissionWaitSeconds: num("CREWDESK_PERMISSION_WAIT", "permissionWaitSeconds", 43200),
     idlePrompts:
       idleEnv !== undefined && idleEnv !== "" ? /^(1|true|yes|on)$/i.test(idleEnv) : cfg.idlePrompts !== false,
   };
@@ -155,7 +155,7 @@ export async function onPermission(input: HookInput): Promise<HookOutput> {
     return { hookSpecificOutput: { hookEventName: "PermissionRequest", decision: { behavior: "allow" } } };
   }
   if (response.action === "deny") {
-    const via = response.source === "policy" ? "a Claude Control Center policy" : "Claude Control Center";
+    const via = response.source === "policy" ? "a Crewdesk policy" : "Crewdesk";
     return {
       hookSpecificOutput: {
         hookEventName: "PermissionRequest",
@@ -195,7 +195,7 @@ export async function onQuestion(input: HookInput): Promise<HookOutput> {
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       permissionDecision: "allow",
-      permissionDecisionReason: "Answered from Claude Control Center",
+      permissionDecisionReason: "Answered from Crewdesk",
       updatedInput: { ...toolInput, answers },
     },
   };

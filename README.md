@@ -1,24 +1,25 @@
-# Claude Control Center
+# Crewdesk
 
 One local dashboard for all your Claude Code sessions. When any session asks a question, wants permission, or finishes a turn, it shows up in one attention queue at **http://127.0.0.1:7777**. Your answer goes back to the exact session that asked. Routing uses the event id and the session id, never the name or terminal.
 
 ```text
 Claude #1 ─┐
-Claude #2 ─┤   hooks    ┌──────────────┐  WebSocket  ┌───────────┐
-Claude #3 ─┼──────────▶ │  claude-hub  │ ◀──────────▶ │ Dashboard │
-Claude #4 ─┘ ◀──────────│ SQLite + API │   REST       └───────────┘
+Claude #2 ─┤   hooks    ┌──────────────┐  WebSocket   ┌───────────┐
+Claude #3 ─┼──────────▶ │   crewdesk   │ ◀──────────▶ │ Dashboard │
+Claude #4 ─┘ ◀──────────│ SQLite + API │     REST     └───────────┘
             decisions   └──────────────┘
 ```
 
 ## Quick start
 
 ```bash
-pnpm install && pnpm build     # Node >= 22.13 (uses built-in node:sqlite)
-npm link                       # puts claude-hub and claude-hub-hook on PATH
-claude-hub configure           # installs hooks into ~/.claude and ~/.claude-accounts/* (with backups)
-claude-hub start               # background daemon
-claude-hub open                # http://127.0.0.1:7777
+npm install -g crewdesk     # Node >= 22.13 (uses the built-in node:sqlite)
+crewdesk configure          # installs hooks into ~/.claude and ~/.claude-accounts/* (with backups)
+crewdesk start              # background daemon
+crewdesk open               # http://127.0.0.1:7777
 ```
+
+Install it globally rather than running it through `npx`. The hooks point at the installed script, so its path has to stay put. To work on Crewdesk itself, see [Development](docs/DEVELOPMENT.md).
 
 Start Claude Code sessions normally. Sessions that were already running need a restart, or run `/hooks`, to pick up the hooks.
 
@@ -41,12 +42,12 @@ If the hub is down, every hook fails open: Claude Code behaves exactly as if no 
 - **Keyboard:** `J`/`K` move through requests, `A` allows, `D` denies, `R` focuses the reply box, `/` searches, `?` shows help.
 - **Filtering and search:** by status, project, agent and free text. History page with a full event table. Per-agent detail page.
 - **Notifications:** desktop notifications (opt-in) and sound. Dark and light themes.
-- **Permission policies:** in `~/.claude-control-center/policies.yaml`. Destructive or chained shell commands are never auto-allowed.
+- **Permission policies:** in `~/.crewdesk/policies.yaml`. Destructive or chained shell commands are never auto-allowed.
 - **Persistence:** everything is persisted in SQLite, so a browser refresh or hub restart loses nothing.
 
 ## Commands
 
-`claude-hub start | stop | restart | status | open | logs [-f] | configure | doctor | uninstall`
+`crewdesk start | stop | restart | status | open | logs [-f] | configure | doctor | uninstall`
 
 ## Documentation
 

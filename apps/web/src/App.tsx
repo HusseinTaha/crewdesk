@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Agent, HubEvent } from "@cch/shared/types";
+import type { Agent, HubEvent } from "@crewdesk/shared/types";
 import { eventSummary } from "./components/ActivityFeed";
 import { ShortcutsDialog } from "./components/ShortcutsDialog";
 import { desktopNotify, playChime, usePrefs } from "./hooks/usePrefs";
@@ -51,7 +51,7 @@ export function App() {
 
   useEffect(() => {
     const n = state.pending.length;
-    document.title = n ? `(${n}) Claude Control Center` : "Claude Control Center";
+    document.title = n ? `(${n}) Crewdesk` : "Crewdesk";
   }, [state.pending.length]);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export function App() {
     <div className="flex h-full flex-col">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-card px-4 py-2.5">
         <a href="#/" className="text-base font-semibold tracking-tight">
-          Claude Control Center
+          Crewdesk
         </a>
         <span
           data-testid="connection"

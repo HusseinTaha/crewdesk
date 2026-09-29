@@ -1,4 +1,4 @@
-import type { AgentStatus, EventType, HubEvent } from "@cch/shared/types";
+import type { AgentStatus, EventType, HubEvent } from "@crewdesk/shared/types";
 
 export const STATUS_STYLE: Record<AgentStatus, { dot: string; text: string; label: string; icon: string }> = {
   STARTING: { dot: "bg-st-blue", text: "text-st-blue", label: "Starting", icon: "●" },

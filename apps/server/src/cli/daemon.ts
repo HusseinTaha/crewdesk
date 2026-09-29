@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import type { HealthInfo } from "@cch/shared";
+import type { HealthInfo } from "@crewdesk/shared";
 import type { HubConfig } from "../config.js";
 import { Logger } from "../logger.js";
 import { buildServer } from "../server.js";
@@ -87,7 +87,7 @@ export async function startDaemon(cfg: HubConfig, cliScript: string): Promise<{ 
     detached: true,
     stdio: ["ignore", out, out],
     windowsHide: true,
-    env: { ...process.env, CLAUDE_HUB_HOME: cfg.home, CLAUDE_HUB_PORT: String(cfg.port), CLAUDE_HUB_HOST: cfg.host },
+    env: { ...process.env, CREWDESK_HOME: cfg.home, CREWDESK_PORT: String(cfg.port), CREWDESK_HOST: cfg.host },
   });
   child.unref();
   const deadline = Date.now() + 15000;

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { z } from "zod";
-import { DEFAULT_HOST, DEFAULT_PORT } from "@cch/shared";
+import { DEFAULT_HOST, DEFAULT_PORT } from "@crewdesk/shared";
 
 export const LOG_LEVELS = ["error", "warn", "info", "debug"] as const;
 export type LogLevel = (typeof LOG_LEVELS)[number];
@@ -44,7 +44,7 @@ export interface HubConfig {
 }
 
 export function hubHome(): string {
-  return process.env.CLAUDE_HUB_HOME ?? path.join(os.homedir(), ".claude-control-center");
+  return process.env.CREWDESK_HOME ?? path.join(os.homedir(), ".crewdesk");
 }
 
 export function expandHome(p: string): string {
@@ -63,9 +63,9 @@ export function readConfigFile(home = hubHome()): z.infer<typeof ConfigFileSchem
   try {
     const parsed = ConfigFileSchema.safeParse(JSON.parse(fs.readFileSync(file, "utf8")));
     if (parsed.success) return parsed.data;
-    process.stderr.write(`claude-hub: ignoring invalid config ${file}: ${parsed.error.message}\n`);
+    process.stderr.write(`crewdesk: ignoring invalid config ${file}: ${parsed.error.message}\n`);
   } catch (err) {
-    process.stderr.write(`claude-hub: cannot read config ${file}: ${(err as Error).message}\n`);
+    process.stderr.write(`crewdesk: cannot read config ${file}: ${(err as Error).message}\n`);
   }
   return {};
 }
@@ -87,21 +87,21 @@ function envBool(name: string): boolean | undefined {
 export function loadConfig(overrides: Partial<HubConfig> = {}): HubConfig {
   const home = overrides.home ?? hubHome();
   const file = readConfigFile(home);
-  const level = (process.env.LOG_LEVEL ?? process.env.CLAUDE_HUB_LOG_LEVEL)?.toLowerCase();
+  const level = (process.env.LOG_LEVEL ?? process.env.CREWDESK_LOG_LEVEL)?.toLowerCase();
   const cfg: HubConfig = {
     home,
-    port: envInt("CLAUDE_HUB_PORT") ?? file.port ?? DEFAULT_PORT,
-    host: process.env.CLAUDE_HUB_HOST ?? file.host ?? DEFAULT_HOST,
-    database: expandHome(process.env.CLAUDE_HUB_DB ?? file.database ?? path.join(home, "data.db")),
-    heartbeatTimeout: envInt("CLAUDE_HUB_HEARTBEAT_TIMEOUT") ?? file.heartbeatTimeout ?? 30000,
-    notifications: envBool("CLAUDE_HUB_NOTIFICATIONS") ?? file.notifications ?? true,
-    sound: envBool("CLAUDE_HUB_SOUND") ?? file.sound ?? true,
+    port: envInt("CREWDESK_PORT") ?? file.port ?? DEFAULT_PORT,
+    host: process.env.CREWDESK_HOST ?? file.host ?? DEFAULT_HOST,
+    database: expandHome(process.env.CREWDESK_DB ?? file.database ?? path.join(home, "data.db")),
+    heartbeatTimeout: envInt("CREWDESK_HEARTBEAT_TIMEOUT") ?? file.heartbeatTimeout ?? 30000,
+    notifications: envBool("CREWDESK_NOTIFICATIONS") ?? file.notifications ?? true,
+    sound: envBool("CREWDESK_SOUND") ?? file.sound ?? true,
     logLevel: (LOG_LEVELS as readonly string[]).includes(level ?? "")
       ? (level as LogLevel)
       : (file.logLevel ?? "info"),
-    waiterGraceMs: envInt("CLAUDE_HUB_WAITER_GRACE") ?? file.waiterGraceMs ?? 5000,
-    idlePrompts: envBool("CLAUDE_HUB_IDLE_PROMPTS") ?? file.idlePrompts ?? true,
-    permissionExpiryMs: envInt("CLAUDE_HUB_PERMISSION_EXPIRY") ?? file.permissionExpiryMs ?? 0,
+    waiterGraceMs: envInt("CREWDESK_WAITER_GRACE") ?? file.waiterGraceMs ?? 5000,
+    idlePrompts: envBool("CREWDESK_IDLE_PROMPTS") ?? file.idlePrompts ?? true,
+    permissionExpiryMs: envInt("CREWDESK_PERMISSION_EXPIRY") ?? file.permissionExpiryMs ?? 0,
     policyFile: path.join(home, "policies.yaml"),
     webDir: null,
     adminToken: null,
