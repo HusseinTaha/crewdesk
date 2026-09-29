@@ -100,9 +100,10 @@ function processTable(): Map<number, Proc> {
       if (pid && ppid) table.set(Number(pid), { pid: Number(pid), ppid: Number(ppid), name: name ?? "" });
     }
   } else {
-    const out = execFileSync("ps", ["-A", "-o", "pid=,ppid=,comm="], { encoding: "utf8", timeout: 5000 });
+    // `args`, not `comm`: on Linux comm is the main thread's name, which Node 24 sets to "MainThread".
+    const out = execFileSync("ps", ["-A", "-o", "pid=,ppid=,args="], { encoding: "utf8", timeout: 5000 });
     for (const line of out.split("\n")) {
-      const m = line.trim().match(/^(\d+)\s+(\d+)\s+(.*)$/);
+      const m = line.trim().match(/^(\d+)\s+(\d+)\s+(\S+)/);
       if (m) table.set(Number(m[1]), { pid: Number(m[1]), ppid: Number(m[2]), name: path.basename(m[3]!) });
     }
   }
