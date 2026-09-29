@@ -121,7 +121,7 @@ export const RequestCard = forwardRef<RequestCardHandle, Props>(function Request
       data-event-id={event.id}
       data-type={event.type}
       onClick={onSelect}
-      className={`rounded-xl border border-line bg-card p-4 shadow-sm border-l-4 ${ACCENT[event.type] ?? "border-line"} ${
+      className={`min-w-0 rounded-xl border border-line bg-card p-4 shadow-sm border-l-4 ${ACCENT[event.type] ?? "border-line"} ${
         selected ? "ring-2 ring-st-blue/60" : ""
       }`}
     >
@@ -143,7 +143,7 @@ export const RequestCard = forwardRef<RequestCardHandle, Props>(function Request
           <div className="text-sm text-muted">
             Wants to use <span className="font-mono text-fg">{perm.toolName}</span>:
           </div>
-          <pre className="max-h-60 overflow-auto whitespace-pre-wrap break-all rounded-md border border-line bg-card-2 p-3 font-mono text-sm">
+          <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-all rounded-md border border-line bg-card-2 p-3 font-mono text-sm">
             {perm.summary || JSON.stringify(perm.toolInput, null, 2)}
           </pre>
           {perm.cwd && (
@@ -177,7 +177,7 @@ export const RequestCard = forwardRef<RequestCardHandle, Props>(function Request
                         e.stopPropagation();
                         answerOption(q, o.label);
                       }}
-                      className={`${btn} border ${on ? "border-st-orange bg-st-orange/20" : "border-line bg-card-2 hover:border-st-orange"}`}
+                      className={`${btn} max-w-full text-left border ${on ? "border-st-orange bg-st-orange/20" : "border-line bg-card-2 hover:border-st-orange"}`}
                     >
                       {o.label}
                       {o.description && <span className="ml-2 hidden text-xs text-muted lg:inline">{o.description}</span>}
@@ -193,7 +193,7 @@ export const RequestCard = forwardRef<RequestCardHandle, Props>(function Request
       {isPrompt && (
         <div className="space-y-2">
           <div className="text-sm text-muted">Claude finished its turn:</div>
-          <div className="max-h-48 overflow-auto whitespace-pre-wrap rounded-md border border-line bg-card-2 p-3 text-sm">{event.message}</div>
+          <div className="max-h-48 overflow-y-auto whitespace-pre-wrap rounded-md border border-line bg-card-2 p-3 text-sm">{event.message}</div>
         </div>
       )}
 

@@ -51,6 +51,8 @@ body {
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  /* Long paths, commands and URLs wrap instead of widening the page: no horizontal scroll. */
+  overflow-wrap: anywhere;
 }
 
 :focus-visible {

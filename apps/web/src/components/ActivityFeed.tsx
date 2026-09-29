@@ -23,7 +23,7 @@ export function ActivityFeed({ events, agentFor, limit = 25 }: { events: HubEven
   return (
     <ul className="divide-y divide-line text-sm" data-testid="activity-feed">
       {rows.map((ev) => (
-        <li key={ev.id} className="flex items-baseline gap-3 py-1.5">
+        <li key={ev.id} className="flex flex-wrap items-baseline gap-x-3 py-1.5 md:flex-nowrap">
           <span className="w-16 shrink-0 whitespace-nowrap font-mono text-xs text-muted">{clock(ev.createdAt)}</span>
           <span className="w-36 shrink-0 truncate font-medium">{agentFor(ev)?.name ?? ev.sessionId.slice(0, 8)}</span>
           <span className={`w-44 shrink-0 ${COLOR[ev.type] ?? ""}`}>
@@ -31,7 +31,7 @@ export function ActivityFeed({ events, agentFor, limit = 25 }: { events: HubEven
             {ev.status === "CANCELLED" && <span className="text-muted"> (cancelled)</span>}
             {ev.response?.source === "policy" && <span className="text-muted"> (policy)</span>}
           </span>
-          <span className="min-w-0 truncate text-muted">{eventSummary(ev)}</span>
+          <span className="min-w-0 basis-full text-muted line-clamp-2 md:basis-auto md:flex-1 md:line-clamp-none md:truncate">{eventSummary(ev)}</span>
         </li>
       ))}
     </ul>

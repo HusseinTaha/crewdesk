@@ -48,7 +48,7 @@ export function Policies() {
         </table>
         {data && data.rules.length === 0 && <div className="p-4 text-sm text-muted">No rules — every permission request comes to the dashboard.</div>}
       </div>
-      <pre className="rounded-xl border border-line bg-card-2 p-3 font-mono text-xs text-muted">{`permissions:
+      <pre className="whitespace-pre-wrap rounded-xl border border-line bg-card-2 p-3 font-mono text-xs text-muted">{`permissions:
   - tool: "Bash"
     match: "git status"
     action: allow

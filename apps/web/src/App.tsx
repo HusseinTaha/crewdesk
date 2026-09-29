@@ -98,7 +98,7 @@ export function App() {
   );
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-w-0 flex-col overflow-x-hidden">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-card px-4 py-2.5">
         <a href="#/" className="text-base font-semibold tracking-tight">
           Crewdesk

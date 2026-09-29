@@ -139,8 +139,8 @@ export function Dashboard({ state, agentFor, search, groupByProject, onOpenAgent
   const select = "rounded-md border border-line bg-card-2 px-2 py-1 text-sm";
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-[320px_1fr]">
-      <aside className="flex min-h-0 flex-col gap-3">
+    <div className="grid min-h-0 flex-1 grid-cols-1 content-start gap-4 overflow-y-auto p-4 lg:grid-cols-[320px_minmax(0,1fr)] lg:content-stretch lg:overflow-hidden">
+      <aside className="flex min-w-0 flex-col gap-3 lg:min-h-0">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">Agents · {visibleAgents.length}</h2>
           <label className="flex items-center gap-1 text-xs text-muted">
@@ -176,7 +176,7 @@ export function Dashboard({ state, agentFor, search, groupByProject, onOpenAgent
             ))}
           </select>
         </div>
-        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+        <div className="space-y-2 pr-1 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
           {grouped.map(([group, list]) => (
             <div key={group || "all"} className="space-y-2">
               {group && <div className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">Project: {group}</div>}
@@ -196,12 +196,12 @@ export function Dashboard({ state, agentFor, search, groupByProject, onOpenAgent
         </label>
       </aside>
 
-      <main className="flex min-h-0 flex-col gap-4">
-        <section className="flex min-h-0 flex-1 flex-col">
+      <main className="flex min-w-0 flex-col gap-4 lg:min-h-0">
+        <section className="flex flex-col lg:min-h-0 lg:flex-1">
           <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted" data-testid="attention-heading">
             Needs attention — {attention.length}
           </h2>
-          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1" data-testid="attention-queue">
+          <div className="space-y-3 overflow-x-hidden pr-1 lg:min-h-0 lg:flex-1 lg:overflow-y-auto" data-testid="attention-queue">
             {attention.map((ev, i) => (
               <RequestCard
                 key={ev.id}

@@ -6,6 +6,21 @@ import { dateTime, EVENT_LABEL } from "../lib/format";
 
 const TYPE_GROUPS = ["", "permission", "question", "prompt", "notification", "task", "session"];
 
+// Secondary columns drop out on narrow screens so the table always fits without horizontal scroll.
+const SM = "hidden sm:table-cell";
+const MD = "hidden md:table-cell";
+const COLUMNS: Array<[string, string]> = [
+  ["ID", MD],
+  ["Agent", ""],
+  ["Project", MD],
+  ["Type", ""],
+  ["Status", SM],
+  ["Detail", ""],
+  ["Response", MD],
+  ["Created", SM],
+  ["Resolved", MD],
+];
+
 export function History({ agents, search, revision, onOpenAgent }: { agents: Agent[]; search: string; revision: number; onOpenAgent(id: string): void }) {
   const [events, setEvents] = useState<HubEvent[]>([]);
   const [type, setType] = useState("");
@@ -61,12 +76,12 @@ export function History({ agents, search, revision, onOpenAgent }: { agents: Age
         </select>
         <span className="ml-auto text-xs text-muted">{events.length} events</span>
       </div>
-      <div className="min-h-0 flex-1 overflow-auto rounded-xl border border-line bg-card">
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden rounded-xl border border-line bg-card">
         <table className="w-full text-left text-sm">
           <thead className="sticky top-0 bg-card-2 text-xs uppercase tracking-wider text-muted">
             <tr>
-              {["ID", "Agent", "Project", "Type", "Status", "Detail", "Response", "Created", "Resolved"].map((h) => (
-                <th key={h} className="px-3 py-2 font-semibold">
+              {COLUMNS.map(([h, hide]) => (
+                <th key={h} className={`whitespace-nowrap px-3 py-2 font-semibold ${hide}`}>
                   {h}
                 </th>
               ))}
@@ -77,10 +92,10 @@ export function History({ agents, search, revision, onOpenAgent }: { agents: Age
               const a = byId[ev.sessionId];
               return (
                 <tr key={ev.id} className="hover:bg-card-2">
-                  <td className="px-3 py-1.5 font-mono text-xs text-muted" title={ev.id}>
+                  <td className={`whitespace-nowrap px-3 py-1.5 font-mono text-xs text-muted ${MD}`} title={ev.id}>
                     {ev.id.slice(-8)}
                   </td>
-                  <td className="px-3 py-1.5">
+                  <td className="whitespace-nowrap px-3 py-1.5">
                     {a ? (
                       <button className="hover:underline" onClick={() => onOpenAgent(a.id)}>
                         {a.name}
@@ -89,17 +104,17 @@ export function History({ agents, search, revision, onOpenAgent }: { agents: Age
                       ev.sessionId.slice(0, 8)
                     )}
                   </td>
-                  <td className="px-3 py-1.5 text-muted">{a?.projectName}</td>
-                  <td className="px-3 py-1.5 whitespace-nowrap">{EVENT_LABEL[ev.type]}</td>
-                  <td className="px-3 py-1.5 text-xs">{ev.status}</td>
-                  <td className="max-w-md truncate px-3 py-1.5 text-muted" title={eventSummary(ev)}>
-                    {eventSummary(ev)}
+                  <td className={`whitespace-nowrap px-3 py-1.5 text-muted ${MD}`}>{a?.projectName}</td>
+                  <td className="px-3 py-1.5 [overflow-wrap:normal]">{EVENT_LABEL[ev.type]}</td>
+                  <td className={`whitespace-nowrap px-3 py-1.5 text-xs ${SM}`}>{ev.status}</td>
+                  <td className="min-w-32 px-3 py-1.5 text-muted" title={eventSummary(ev)}>
+                    <div className="line-clamp-2">{eventSummary(ev)}</div>
                   </td>
-                  <td className="max-w-xs truncate px-3 py-1.5 text-muted">
-                    {ev.response ? `${ev.response.action}${ev.response.response ? `: ${ev.response.response}` : ""} (${ev.response.source})` : String(ev.payload?.closeReason ?? "")}
+                  <td className={`px-3 py-1.5 text-muted ${MD}`}>
+                    <div className="line-clamp-2">{ev.response ? `${ev.response.action}${ev.response.response ? `: ${ev.response.response}` : ""} (${ev.response.source})` : String(ev.payload?.closeReason ?? "")}</div>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-1.5 text-xs text-muted">{dateTime(ev.createdAt)}</td>
-                  <td className="whitespace-nowrap px-3 py-1.5 text-xs text-muted">{dateTime(ev.resolvedAt)}</td>
+                  <td className={`whitespace-nowrap px-3 py-1.5 text-xs text-muted ${SM}`}>{dateTime(ev.createdAt)}</td>
+                  <td className={`whitespace-nowrap px-3 py-1.5 text-xs text-muted ${MD}`}>{dateTime(ev.resolvedAt)}</td>
                 </tr>
               );
             })}
