@@ -1,4 +1,7 @@
 {
+  "env": {
+    "HIVE_PROJECT": "claude-hub"
+  },
   "hooks": {
     "PostToolUse": [
       {
