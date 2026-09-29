@@ -24,7 +24,7 @@ export function ActivityFeed({ events, agentFor, limit = 25 }: { events: HubEven
     <ul className="divide-y divide-line text-sm" data-testid="activity-feed">
       {rows.map((ev) => (
         <li key={ev.id} className="flex items-baseline gap-3 py-1.5">
-          <span className="w-12 shrink-0 font-mono text-xs text-muted">{clock(ev.createdAt)}</span>
+          <span className="w-16 shrink-0 whitespace-nowrap font-mono text-xs text-muted">{clock(ev.createdAt)}</span>
           <span className="w-36 shrink-0 truncate font-medium">{agentFor(ev)?.name ?? ev.sessionId.slice(0, 8)}</span>
           <span className={`w-44 shrink-0 ${COLOR[ev.type] ?? ""}`}>
             {EVENT_LABEL[ev.type]}
