@@ -32,7 +32,6 @@ function claude(prompt: string) {
     ["-p", prompt, "--settings", settingsFile, "--permission-mode", "default", "--model", "haiku", "--output-format", "text"],
     {
       cwd: work,
-      shell: process.platform === "win32",
       env: { ...process.env, CLAUDE_HUB_URL: hub.url, CLAUDE_HUB_HOME: hub.home, CLAUDE_HUB_IDLE_PROMPTS: "0" },
       stdio: ["ignore", "pipe", "pipe"],
     },

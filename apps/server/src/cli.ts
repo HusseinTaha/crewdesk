@@ -1,4 +1,4 @@
-import { exec, execFileSync } from "node:child_process";
+import { exec, execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
@@ -265,7 +265,7 @@ async function cmdDoctor(cfg: HubConfig) {
   }
   let claudeVersion = "";
   try {
-    claudeVersion = execFileSync("claude", ["--version"], { encoding: "utf8", timeout: 10000, shell: process.platform === "win32" }).trim();
+    claudeVersion = execSync("claude --version", { encoding: "utf8", timeout: 10000, stdio: ["ignore", "pipe", "ignore"] }).trim();
   } catch {
     /* not found */
   }
