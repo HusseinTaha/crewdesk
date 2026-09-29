@@ -1,0 +1,1 @@
+- Shared memory: bootstrap with `ctx_get(role=<yours>)` before exploring; pass `since=<last CURSOR>` on later calls; `ctx_commit` compact results before finishing.

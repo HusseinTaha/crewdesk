@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "hive": {
+      "command": "node",
+      "args": [
+        "C:\\Dev\\Misc\\mcp-claude-sharedctx\\dist\\server.js"
+      ]
+    },
+    "graft": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@nanonets/graft",
+        "mcp"
+      ]
+    }
+  }
+}
