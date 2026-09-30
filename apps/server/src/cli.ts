@@ -3,8 +3,9 @@ import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
 import { fileURLToPath } from "node:url";
-import { configPath, loadConfig, type HubConfig } from "./config.js";
-import { baseUrl, health, logFile, readPid, runForeground, startDaemon, stopDaemon } from "./cli/daemon.js";
+import { configPath, loadConfig, readConfigFile, setConfigValue, type HubConfig } from "./config.js";
+import { accessTokenFile, ensureAccessToken, isLoopbackHost, loginUrls } from "./auth.js";
+import { authHeaders, baseUrl, health, logFile, readPid, runForeground, startDaemon, stopDaemon } from "./cli/daemon.js";
 import {
   describeTarget,
   detectConfigDirs,
@@ -35,8 +36,10 @@ Usage: crewdesk <command> [options]
 
 Commands:
   start [--foreground]   Start the hub (background daemon by default)
+      --remote | --local         listen on the network with the access token, or on 127.0.0.1 only (saved)
   stop                   Stop the hub
-  restart                Restart the hub
+  restart [--remote|--local]  Restart the hub
+  token [--rotate]       Print remote-mode login URLs (--rotate: new token, restarts the hub)
   status                 Show hub status, agents and pending requests
   open                   Open the dashboard in the browser
   logs [-f] [-n N]       Show the hub log
@@ -46,7 +49,7 @@ Commands:
   doctor                 Diagnose the installation
   uninstall              Remove hooks and optionally the database
 
-Environment: CREWDESK_HOME, CREWDESK_PORT, CREWDESK_HOST, CREWDESK_DB,
+Environment: CREWDESK_HOME, CREWDESK_PORT, CREWDESK_HOST, CREWDESK_REMOTE, CREWDESK_DB,
              CREWDESK_HEARTBEAT_TIMEOUT, LOG_LEVEL
 `;
 
@@ -93,10 +96,12 @@ async function cmdStart(cfg: HubConfig, args: string[]) {
     if (!daemon) console.log(c.bold("Crewdesk"));
     await runForeground({ ...cfg, webDir }, { daemon });
     if (!daemon) {
-      console.log(`\nDashboard:\n${baseUrl(cfg)}\n\nWaiting for Claude Code sessions... (Ctrl+C to stop)`);
+      printDashboard(cfg);
+      console.log("Waiting for Claude Code sessions... (Ctrl+C to stop)");
     }
     return;
   }
+  if (cfg.remote) ensureAccessToken(cfg.home);
   const { pid, already } = await startDaemon(cfg, cliScript);
   console.log(c.bold("Crewdesk\n"));
   if (already) console.log(c.ok(`Already running (pid ${pid})`));
@@ -106,8 +111,40 @@ async function cmdStart(cfg: HubConfig, args: string[]) {
     console.log(c.ok("WebSocket ready"));
   }
   if (!fs.existsSync(path.join(webDir, "index.html"))) console.log(c.warn("Web UI not built — run `pnpm build`"));
-  console.log(`\nDashboard:\n${baseUrl(cfg)}\n`);
+  printDashboard(cfg);
   if (!already) console.log("Waiting for Claude Code sessions...");
+}
+
+/** Dashboard URL in local mode; the remote-mode warning and login URLs otherwise. */
+function printDashboard(cfg: HubConfig) {
+  if (!cfg.remote) {
+    console.log(`\nDashboard:\n${baseUrl(cfg)}\n`);
+    return;
+  }
+  const token = ensureAccessToken(cfg.home);
+  console.log(`\n${c.warn(`Remote mode: listening on ${cfg.host}:${cfg.port}. Anyone with the token can approve commands.`)}`);
+  console.log("\nSign in from another machine with:");
+  for (const url of loginUrls(cfg.host, cfg.port, token)) console.log(`  ${url}`);
+  console.log(c.dim("\nThis is plain HTTP: use it on a trusted network, or put HTTPS, a VPN or an SSH tunnel in front."));
+  console.log(c.dim("`crewdesk token` prints these again; `crewdesk token --rotate` signs every browser out.\n"));
+}
+
+async function cmdToken(cfg: HubConfig, args: string[]) {
+  if (!cfg.remote) {
+    console.log("Remote mode is off: the hub only listens on 127.0.0.1 and needs no token.");
+    console.log(`Turn it on with \`crewdesk restart --remote\`, or set "remote": true in ${configPath(cfg.home)}.`);
+    return;
+  }
+  if (flag(args, "--rotate")) {
+    ensureAccessToken(cfg.home, true);
+    console.log(c.ok("New access token created; existing browser sessions are signed out."));
+    if (await health(cfg)) {
+      await stopDaemon(cfg);
+      await startDaemon(cfg, cliScript);
+      console.log(c.ok("Hub restarted with the new token"));
+    }
+  }
+  printDashboard(cfg);
 }
 
 async function cmdStatus(cfg: HubConfig) {
@@ -118,10 +155,18 @@ async function cmdStatus(cfg: HubConfig) {
     return;
   }
   console.log(c.ok(`Hub running (pid ${h.pid}, up ${h.uptime}s, v${h.version}) — ${baseUrl(cfg)}`));
-  const [agents, pending] = await Promise.all([
-    fetch(`${baseUrl(cfg)}/api/agents`).then((r) => r.json() as Promise<{ agents: any[] }>),
-    fetch(`${baseUrl(cfg)}/api/events/pending`).then((r) => r.json() as Promise<{ events: any[] }>),
-  ]);
+  if (h.remote) console.log(c.warn(`Remote mode on port ${cfg.port}: access token required (\`crewdesk token\` prints the login URLs)`));
+  const headers = authHeaders(cfg);
+  const getJson = async <T,>(url: string): Promise<T | null> => {
+    const r = await fetch(`${baseUrl(cfg)}${url}`, { headers });
+    return r.ok ? ((await r.json()) as T) : null;
+  };
+  const [agents, pending] = await Promise.all([getJson<{ agents: any[] }>("/api/agents"), getJson<{ events: any[] }>("/api/events/pending")]);
+  if (!agents || !pending) {
+    console.log(c.bad("The hub rejected the request: the access token is missing or was rotated. Run `crewdesk restart`."));
+    process.exitCode = 1;
+    return;
+  }
   const online = agents.agents.filter((a) => a.status !== "OFFLINE");
   console.log(`\n${online.length} active agent(s), ${pending.events.length} need attention\n`);
   for (const a of agents.agents) {
@@ -280,6 +325,9 @@ async function cmdDoctor(cfg: HubConfig) {
   for (const t of targets.filter((t) => !t.installed)) console.log(c.dim(`    not installed in ${t.label}`));
   check(fs.existsSync(hookScript) && fs.existsSync(path.join(root, "packages", "hook", "dist", "hook.js")), "Hook executable", "run `pnpm build`");
   check(fs.existsSync(path.join(webDir, "index.html")), "Web UI build", "run `pnpm build`");
+  if (cfg.remote) {
+    check(fs.existsSync(accessTokenFile(cfg.home)), `Remote mode on ${cfg.host}:${cfg.port} (token auth)`, "no access token yet: `crewdesk start` creates it");
+  }
   console.log(problems ? `\n${problems} problem(s) found.` : "\nEverything looks good.");
   if (problems) process.exitCode = 1;
 }
@@ -299,6 +347,20 @@ async function firstRun(cfg: HubConfig) {
 
 export async function main(argv = process.argv.slice(2)) {
   const [cmd, ...args] = argv;
+  // --remote / --local are saved to config.json, so status, token, restart and the hooks all agree
+  // with the running hub.
+  if ((cmd === "start" || cmd === "restart") && (args.includes("--remote") || args.includes("--local"))) {
+    const remote = args.includes("--remote");
+    // --local also drops a saved network host; otherwise that host would keep remote mode on.
+    const savedHost = readConfigFile().host;
+    if (!remote && savedHost && !isLoopbackHost(savedHost)) setConfigValue("host", "127.0.0.1");
+    setConfigValue("remote", remote);
+    // A running hub keeps its current mode until it restarts.
+    const running = cmd === "start" ? await health(loadConfig()) : null;
+    if (running && running.remote !== remote) {
+      console.log(c.warn(`Saved "remote": ${remote}. Run \`crewdesk restart\` to apply it to the running hub.`));
+    }
+  }
   const cfg = loadConfig();
   switch (cmd) {
     case "start":
@@ -313,8 +375,11 @@ export async function main(argv = process.argv.slice(2)) {
       return cmdStatus(cfg);
     case "open":
       if (!(await health(cfg))) await cmdStart(cfg, []);
-      openBrowser(baseUrl(cfg));
+      // In remote mode the local browser needs the token too, so open the login URL.
+      openBrowser(cfg.remote ? `${baseUrl(cfg)}/?token=${encodeURIComponent(ensureAccessToken(cfg.home))}` : baseUrl(cfg));
       return;
+    case "token":
+      return cmdToken(cfg, args);
     case "logs":
       return cmdLogs(cfg, args);
     case "configure":

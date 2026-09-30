@@ -119,11 +119,28 @@ If the hub is down, every hook fails open: Claude Code behaves exactly as if no 
 - **Permission policies:** in `~/.crewdesk/policies.yaml`. Destructive or chained shell commands are never auto-allowed.
 - **Persistence:** everything is persisted in SQLite, so a browser refresh or hub restart loses nothing.
 - **Cross-platform:** tested in CI on macOS, Linux and Windows with Node 22 and 24.
+- **Remote access (opt-in):** `crewdesk start --remote` protects the dashboard with an access token and prints a login URL. See below.
+
+## Remote access
+
+Claude Code running on a server or VM? The hub is local-only by default. Either tunnel to it:
+
+```bash
+ssh -N -L 7777:127.0.0.1:7777 user@your-server   # then open http://127.0.0.1:7777
+```
+
+or turn on remote mode on the server:
+
+```bash
+crewdesk restart --remote      # prints http://<server-ip>:7777/?token=…
+```
+
+Opening the printed login URL signs that browser in with an `HttpOnly` cookie. Every request needs the token, `crewdesk token --rotate` signs everyone out, and `crewdesk restart --local` switches remote mode off. The hub speaks plain HTTP, and anyone with the token can approve commands, so keep it on a trusted network or behind HTTPS or a VPN. Setup, firewall rules and HTTPS proxy examples are in [Remote access](docs/REMOTE.md).
 
 ## Commands
 
-`crewdesk start | stop | restart | status | open | logs [-f] | configure | doctor | uninstall`
+`crewdesk start [--remote|--local] | stop | restart | status | open | token [--rotate] | logs [-f] | configure | doctor | uninstall`
 
 ## Documentation
 
-[Installation](docs/INSTALLATION.md) · [Configuration](docs/CONFIGURATION.md) · [Hooks](docs/HOOKS.md) · [API](docs/API.md) · [Development](docs/DEVELOPMENT.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Security](docs/SECURITY.md) · [Original spec](docs/CLAUDE-CONTROL-CENTER.md)
+[Installation](docs/INSTALLATION.md) · [Configuration](docs/CONFIGURATION.md) · [Remote access](docs/REMOTE.md) · [Hooks](docs/HOOKS.md) · [API](docs/API.md) · [Development](docs/DEVELOPMENT.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Security](docs/SECURITY.md) · [Original spec](docs/CLAUDE-CONTROL-CENTER.md)

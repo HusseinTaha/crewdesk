@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { HealthInfo } from "@crewdesk/shared";
+import { ensureAccessToken, isWildcardHost, readAccessToken } from "../auth.js";
 import type { HubConfig } from "../config.js";
 import { Logger } from "../logger.js";
 import { buildServer } from "../server.js";
@@ -11,7 +12,13 @@ import { isPidAlive } from "../util/process.js";
 export const pidFile = (cfg: HubConfig) => path.join(cfg.home, "hub.pid");
 export const tokenFile = (cfg: HubConfig) => path.join(cfg.home, "hub.token");
 export const logFile = (cfg: HubConfig) => path.join(cfg.home, "logs", "hub.log");
-export const baseUrl = (cfg: HubConfig) => `http://${cfg.host === "0.0.0.0" ? "127.0.0.1" : cfg.host}:${cfg.port}`;
+export const baseUrl = (cfg: HubConfig) => `http://${isWildcardHost(cfg.host) ? "127.0.0.1" : cfg.host}:${cfg.port}`;
+
+/** Headers for CLI calls to the hub API: the access token whenever one exists (ignored in local mode). */
+export function authHeaders(cfg: HubConfig): Record<string, string> {
+  const token = readAccessToken(cfg.home);
+  return token ? { authorization: `Bearer ${token}` } : {};
+}
 
 export function readPid(cfg: HubConfig): number | null {
   try {
@@ -36,7 +43,8 @@ export async function runForeground(cfg: HubConfig, opts: { daemon: boolean }) {
   fs.mkdirSync(cfg.home, { recursive: true });
   const token = crypto.randomBytes(24).toString("hex");
   const log = new Logger(cfg.logLevel, opts.daemon ? logFile(cfg) : null, !opts.daemon);
-  const { app, hub } = await buildServer({ ...cfg, adminToken: token }, log);
+  const accessToken = cfg.remote ? ensureAccessToken(cfg.home) : null;
+  const { app, hub } = await buildServer({ ...cfg, adminToken: token, accessToken }, log);
   hub.start();
   try {
     await app.listen({ port: cfg.port, host: cfg.host });
@@ -47,7 +55,7 @@ export async function runForeground(cfg: HubConfig, opts: { daemon: boolean }) {
   }
   fs.writeFileSync(pidFile(cfg), String(process.pid));
   fs.writeFileSync(tokenFile(cfg), token, { mode: 0o600 });
-  log.info("Server started", { url: baseUrl(cfg), database: cfg.database });
+  log.info("Server started", { url: baseUrl(cfg), database: cfg.database, remote: cfg.remote });
 
   let closing = false;
   const shutdown = async () => {
@@ -87,7 +95,13 @@ export async function startDaemon(cfg: HubConfig, cliScript: string): Promise<{ 
     detached: true,
     stdio: ["ignore", out, out],
     windowsHide: true,
-    env: { ...process.env, CREWDESK_HOME: cfg.home, CREWDESK_PORT: String(cfg.port), CREWDESK_HOST: cfg.host },
+    env: {
+      ...process.env,
+      CREWDESK_HOME: cfg.home,
+      CREWDESK_PORT: String(cfg.port),
+      CREWDESK_HOST: cfg.host,
+      CREWDESK_REMOTE: cfg.remote ? "1" : "0",
+    },
   });
   child.unref();
   const deadline = Date.now() + 15000;

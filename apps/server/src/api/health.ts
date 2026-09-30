@@ -18,6 +18,7 @@ export function registerHealthRoutes(app: FastifyInstance, hub: Hub) {
       uptime: Math.round((Date.now() - hub.startedAt) / 1000),
       version: VERSION,
       pid: process.pid,
+      remote: hub.config.remote,
     };
   };
   app.get("/health", health);

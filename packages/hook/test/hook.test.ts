@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -52,6 +53,32 @@ async function waitForPending(type: string, timeoutMs = 10000) {
   }
   throw new Error(`no pending ${type}`);
 }
+
+describe("crewdesk-hook in remote mode", () => {
+  const TOKEN = "hook-remote-token-0123456789";
+  const agents = async () =>
+    (await (await fetch(hub.url + "/api/agents", { headers: { authorization: `Bearer ${TOKEN}` } })).json()).agents;
+  const remote = async () => {
+    await hub.close();
+    hub = await startTestHub({ remote: true, accessToken: TOKEN });
+  };
+
+  it("sends the access token from <home>/access.token", async () => {
+    await remote();
+    fs.writeFileSync(path.join(hub.home, "access.token"), TOKEN);
+    const r = await runHook("register", { hook_event_name: "SessionStart", source: "startup" }).done;
+    expect(r.code).toBe(0);
+    expect((await agents()).map((a: any) => a.sessionId)).toEqual(["sess-1"]);
+  });
+
+  it("fails open when the token is missing: exit 0, nothing registered", async () => {
+    await remote();
+    const r = await runHook("register", { hook_event_name: "SessionStart", source: "startup" }).done;
+    expect(r.code).toBe(0);
+    expect(r.stdout).toBe("");
+    expect(await agents()).toEqual([]);
+  });
+});
 
 describe("crewdesk-hook", () => {
   it("register creates an agent with project, account and pid", async () => {

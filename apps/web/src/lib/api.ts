@@ -16,6 +16,8 @@ async function call<T>(method: string, url: string, body?: unknown): Promise<T> 
     headers: body !== undefined ? { "content-type": "application/json" } : {},
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
+  // Remote mode: the session cookie expired or the token was rotated; reloading shows the sign-in page.
+  if (res.status === 401) location.reload();
   const text = await res.text();
   const json = text ? JSON.parse(text) : {};
   if (!res.ok) throw new ApiError(res.status, json?.error?.code ?? "ERROR", json?.error?.message ?? res.statusText);

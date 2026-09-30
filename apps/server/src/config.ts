@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { z } from "zod";
 import { DEFAULT_HOST, DEFAULT_PORT } from "@crewdesk/shared";
+import { isLoopbackHost } from "./auth.js";
 
 export const LOG_LEVELS = ["error", "warn", "info", "debug"] as const;
 export type LogLevel = (typeof LOG_LEVELS)[number];
@@ -22,6 +23,8 @@ const ConfigFileSchema = z
     idlePrompts: z.boolean(),
     /** Optional auto-expiry for pending permission requests (ms). 0 disables. */
     permissionExpiryMs: z.number().int().min(0),
+    /** Listen on the network (0.0.0.0 unless host is set) and require the access token. */
+    remote: z.boolean(),
   })
   .partial();
 
@@ -41,6 +44,10 @@ export interface HubConfig {
   webDir: string | null;
   /** Secret required by the shutdown endpoint (written to hub.token by the daemon). */
   adminToken: string | null;
+  /** True whenever the hub listens beyond loopback; requests then need `accessToken`. */
+  remote: boolean;
+  /** Access token for remote mode (from access.token); null in local mode. */
+  accessToken: string | null;
 }
 
 export function hubHome(): string {
@@ -68,6 +75,20 @@ export function readConfigFile(home = hubHome()): z.infer<typeof ConfigFileSchem
     process.stderr.write(`crewdesk: cannot read config ${file}: ${(err as Error).message}\n`);
   }
   return {};
+}
+
+/** Set one key in config.json, keeping the rest of the file. */
+export function setConfigValue(key: string, value: unknown, home = hubHome()) {
+  const file = configPath(home);
+  let data: Record<string, unknown> = {};
+  try {
+    data = JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    /* new file */
+  }
+  data[key] = value;
+  fs.mkdirSync(home, { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(data, null, 2) + "\n");
 }
 
 function envInt(name: string): number | undefined {
@@ -105,7 +126,13 @@ export function loadConfig(overrides: Partial<HubConfig> = {}): HubConfig {
     policyFile: path.join(home, "policies.yaml"),
     webDir: null,
     adminToken: null,
+    remote: envBool("CREWDESK_REMOTE") ?? file.remote ?? false,
+    accessToken: null,
     ...overrides,
   };
+  // Remote mode binds every interface unless a specific address was chosen. Any non-loopback bind is
+  // remote mode: the hub is never reachable from the network without the access token.
+  if (cfg.remote && isLoopbackHost(cfg.host)) cfg.host = "0.0.0.0";
+  cfg.remote = !isLoopbackHost(cfg.host);
   return cfg;
 }

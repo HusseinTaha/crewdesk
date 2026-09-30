@@ -21,8 +21,23 @@ export function hubUrl(): string {
     /* defaults */
   }
   if (process.env.CREWDESK_PORT) port = Number(process.env.CREWDESK_PORT);
-  if (host === "0.0.0.0") host = "127.0.0.1";
+  if (host === "0.0.0.0" || host === "::" || host === "[::]") host = "127.0.0.1";
   return `http://${host}:${port}`;
+}
+
+let cachedToken: string | null | undefined;
+/** Remote-mode access token: CREWDESK_TOKEN, else <home>/access.token (absent in local mode). */
+export function accessToken(): string | null {
+  if (cachedToken !== undefined) return cachedToken;
+  cachedToken = process.env.CREWDESK_TOKEN || null;
+  if (!cachedToken) {
+    try {
+      cachedToken = fs.readFileSync(path.join(hubHome(), "access.token"), "utf8").trim() || null;
+    } catch {
+      cachedToken = null;
+    }
+  }
+  return cachedToken;
 }
 
 export class HubUnavailable extends Error {}
@@ -51,9 +66,12 @@ export async function request<T = any>(method: string, url: string, body?: unkno
   for (let attempt = 0; attempt <= retries.length; attempt++) {
     if (attempt > 0) await sleep(retries[attempt - 1]!);
     try {
+      const headers: Record<string, string> = body !== undefined ? { "content-type": "application/json" } : {};
+      const token = accessToken();
+      if (token) headers.authorization = `Bearer ${token}`;
       const res = await fetch(hubUrl() + url, {
         method,
-        headers: body !== undefined ? { "content-type": "application/json" } : {},
+        headers,
         body: body !== undefined ? JSON.stringify(body) : undefined,
         signal: AbortSignal.timeout(opts.timeoutMs ?? 5000),
       });

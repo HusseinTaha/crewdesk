@@ -5,7 +5,8 @@ The config file is `~/.crewdesk/config.json`. Environment variables override it.
 | Key | Env | Default | Meaning |
 |---|---|---|---|
 | `port` | `CREWDESK_PORT` | 7777 | HTTP/WebSocket port |
-| `host` | `CREWDESK_HOST` | 127.0.0.1 | Bind address (keep loopback) |
+| `host` | `CREWDESK_HOST` | 127.0.0.1 | Bind address. Any non-loopback address turns on remote mode (token required) |
+| `remote` | `CREWDESK_REMOTE` | false | Remote mode: listen on `0.0.0.0` (or `host`) and require the access token. `start --remote` / `--local` save it. See [Remote access](REMOTE.md) |
 | `database` | `CREWDESK_DB` | `~/.crewdesk/data.db` | SQLite file |
 | `heartbeatTimeout` | `CREWDESK_HEARTBEAT_TIMEOUT` | 30000 | ms of silence before a session with no known pid is OFFLINE (10x while WORKING) |
 | `logLevel` | `LOG_LEVEL` | info | error, warn, info or debug |
@@ -22,6 +23,7 @@ Per-session environment, set before launching `claude`:
 - `CREWDESK_AGENT_NAME`: display name for the session.
 - `CREWDESK_PROJECT`: overrides the project name (default: the folder name).
 - `CREWDESK_URL`: sends the session to a different hub.
+- `CREWDESK_TOKEN`: access token for a remote-mode hub. By default the hook reads `~/.crewdesk/access.token`.
 
 ## Permission policies
 

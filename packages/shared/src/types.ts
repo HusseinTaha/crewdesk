@@ -144,4 +144,6 @@ export interface HealthInfo {
   uptime: number;
   version: string;
   pid: number;
+  /** Remote mode: listening beyond loopback with token auth. */
+  remote: boolean;
 }

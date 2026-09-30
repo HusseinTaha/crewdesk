@@ -4,9 +4,11 @@ Base URL: `http://127.0.0.1:7777`. JSON only. All input is validated with Zod.
 
 Errors use the form `{"error":{"code","message","details?"}}`, with status 400, 401, 403, 404, 409, 422 or 500.
 
+**Authentication.** Local mode has none; only loopback `Host` and `Origin` values are accepted. In [remote mode](REMOTE.md), every request except `GET /health` and `POST /api/admin/shutdown` needs the access token, sent as `Authorization: Bearer <token>` or as the `crewdesk_auth` cookie. Without it you get `401 UNAUTHORIZED`, or the sign-in page for browser page loads. `GET /?token=<token>` sets the cookie and redirects. A cross-site `Origin` gets `403 FORBIDDEN_ORIGIN`.
+
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/health` | `{status, database, websocket, uptime, version, pid}` |
+| GET | `/health` | `{status, database, websocket, uptime, version, pid, remote}`. No token needed |
 | POST | `/api/agents/register` | `{sessionId, name?, project?, cwd?, pid?, account?}` returns `{success, agentId, agent}`. Idempotent per session |
 | POST | `/api/agents/heartbeat` | `{sessionId, status?, activity?}` |
 | GET | `/api/agents`, `/api/agents/:id` | The detail call includes recent events |

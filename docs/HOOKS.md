@@ -25,4 +25,5 @@
 Hooks always exit 0.
 - **Hub unreachable:** retried at 100 ms, 500 ms, 1 s and 2 s (5 attempts). After that the hook prints nothing, so Claude Code proceeds normally.
 - **Hub restart:** a waiting hook keeps retrying its long-poll for about 60 s, so the hub can restart without losing the request.
+- **Remote mode:** the hook sends `Authorization: Bearer` with the token from `~/.crewdesk/access.token`, or from `CREWDESK_TOKEN`. A missing or wrong token counts as a failure and fails open.
 - **Debugging:** set `CREWDESK_HOOK_DEBUG=1` to log to `~/.crewdesk/logs/hook.log`.
