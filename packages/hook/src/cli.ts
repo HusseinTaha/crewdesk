@@ -58,7 +58,13 @@ async function main(): Promise<number> {
   return 0;
 }
 
-main().then(
-  (code) => process.exit(code),
-  () => process.exit(0),
-);
+// Let the event loop drain instead of calling process.exit() right away: on Windows, exiting while
+// fetch's sockets/abort timers are still closing trips a libuv assertion
+// (`!(handle->flags & UV_HANDLE_CLOSING)`, src\win\async.c) and exits 127. The unref'd timer only
+// forces the exit if some handle keeps the process alive.
+function finish(code: number) {
+  process.exitCode = code;
+  setTimeout(() => process.exit(code), 2000).unref();
+}
+
+main().then(finish, () => finish(0));
